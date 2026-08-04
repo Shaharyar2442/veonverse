@@ -210,27 +210,99 @@ body {
   border: 1px solid rgba(212, 175, 55, 0.2);
 }
 
-.tag.domain {
-  background: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
+/* Interactive AI Leader Avatar Card */
+.avatar-mentor-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #102445 0%, #0c1b33 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.avatar-icon-box {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  background: #17325c;
+  border: 2px solid var(--accent-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-emoji {
+  font-size: 1.4rem;
+}
+
+.avatar-pulse-ring {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-cyan);
+  opacity: 0.6;
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+.avatar-mentor-info {
+  flex: 1;
+}
+
+.avatar-status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-name {
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.avatar-state-badge {
+  background: rgba(0, 210, 255, 0.12);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  color: var(--accent-cyan);
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.avatar-subtitle {
+  margin: 3px 0 0 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.start-step-btn {
+  white-space: nowrap;
 }
 
 /* Chat Center */
 .chat {
   overflow: hidden;
-}
-
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.chat-header h3 {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--text-muted);
 }
 
 .messages {

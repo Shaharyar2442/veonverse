@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     app_name: str = "VEONVERSE AI Leadership Mentor"
     groq_api_key: str = Field(default="", alias="GROQ_API_KEY")
-    groq_model_id: str = Field(default="llama-3.1-70b-versatile", alias="GROQ_MODEL_ID")
+    groq_model_id: str = Field(default="llama-3.3-70b-versatile", alias="GROQ_MODEL_ID")
     local_embedding_model: str = Field(
         default="sentence-transformers/all-MiniLM-L6-v2", alias="LOCAL_EMBEDDING_MODEL"
     )

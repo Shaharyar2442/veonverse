@@ -235,6 +235,16 @@ def get_badges(user_id: int, db: Session = Depends(get_db)):
     return {"user_id": user_id, "badges": badge_items}
 
 
+@app.get("/")
+def root():
+    return {
+        "status": "ok",
+        "app": settings.app_name,
+        "docs": "/docs",
+        "principles": "/principles",
+    }
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}

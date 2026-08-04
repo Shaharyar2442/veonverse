@@ -81,7 +81,9 @@ def _run_structured_call(step: str, prompt: str, options_expected: bool = False)
     try:
         response = bedrock_service.converse_structured(
             system_prompt=(
-                "You are VEONVERSE AI Leadership Mentor. Always return grounded, practical coaching."
+                "You are the VEON AI Leadership Mentor Avatar, an executive leader speaking warmly, "
+                "inspirationally, and interactively to an employee. Your mission is to teach and convey "
+                "VEON's leadership principles clearly through storytelling, practical guidance, and dialog."
             ),
             user_prompt=prompt,
             schema=STEP_SCHEMA,
@@ -90,21 +92,21 @@ def _run_structured_call(step: str, prompt: str, options_expected: bool = False)
         if options_expected:
             response = {
                 "step": step,
-                "text": "A high-standard leader challenges mediocrity early, asks for better work, and sets a clear bar for excellence.",
+                "text": "Welcome! I'm your Leadership Avatar. Let's explore how we bring this principle to life. Imagine you face this workplace situation—how would you respond?",
                 "options": [
-                    "Speak up directly and ask for a stronger draft.",
-                    "Accept the work and wait for a later revision.",
-                    "Delegate the issue and avoid the conversation.",
-                    "Set a higher bar and coach the team on why it matters.",
+                    "Take direct initiative to elevate standard and explain the vision.",
+                    "Gather the core team first to align on immediate priorities.",
+                    "Review customer feedback to isolate the single metric that matters.",
+                    "Coach team members individually on how to achieve excellence.",
                 ],
-                "avatar_state": "ready",
+                "avatar_state": "Presenting Story",
             }
         else:
             response = {
                 "step": step,
-                "text": "This is a local fallback response so the experience can still be explored while AI services are not configured.",
+                "text": "Great work engaging with this principle! Together we build a high-performing culture.",
                 "options": None,
-                "avatar_state": "ready",
+                "avatar_state": "Coaching Employee",
             }
     response["step"] = step
     if not options_expected:
@@ -129,14 +131,14 @@ def advance_lesson(
 
     if current_step == "intro":
         prompt = (
-            f"Generate a realistic corporate workplace scenario based on the leadership principle '{principle.title}'.\n"
-            f"Psychometric Tension: {principle.psychometric_tension or 'Standard vs High Performance'}.\n"
-            f"Official principle text: {principle.official_text}\n"
-            "Provide exactly 4 distinct action options that test the candidate along this psychometric forced choice tension."
+            f"As the VEON Leadership Avatar, warmly introduce the leadership principle '{principle.title}' to the employee.\n"
+            f"Share a realistic corporate story highlighting the core tension: {principle.psychometric_tension or 'Standard vs High Performance'}.\n"
+            "Ask the employee how they would handle this situation and provide exactly 4 practical action choices."
         )
         mentor_response = _run_structured_call("intro", prompt, options_expected=True)
         if not mentor_response.get("options") or len(mentor_response["options"]) != 4:
             raise RuntimeError("Intro response must include exactly 4 options.")
+        mentor_response["avatar_state"] = "Presenting Story"
         progress.current_step = "discussion"
         progress.status = "in_progress"
         _log_chat(db, user_id, "assistant", mentor_response["text"])
@@ -150,15 +152,16 @@ def advance_lesson(
 
     if current_step == "discussion":
         if not user_input:
-            raise ValueError("A selected scenario option is required for the discussion step.")
+            raise ValueError("A selected option is required for the discussion step.")
         progress.chosen_scenario_answer = user_input
         prompt = (
-            f"The learner selected this option in the '{principle.title}' scenario:\n"
-            f"'{user_input}'.\n"
-            f"Evaluate their choice against Hogan Competencies: {principle.hogan_competencies or 'Leadership'}.\n"
-            "Respond with coaching feedback: what they did well, what excellence requires, and one concrete adjustment."
+            f"The employee chose this action: '{user_input}'.\n"
+            f"As their Leadership Avatar, discuss their choice warmly: commend what is effective, "
+            f"explain how it connects to '{principle.title}' and Hogan competencies ({principle.hogan_competencies}), "
+            "and offer one practical leadership insight."
         )
         mentor_response = _run_structured_call("discussion", prompt)
+        mentor_response["avatar_state"] = "Coaching & Feedback"
         progress.current_step = "official_principle"
         _log_chat(db, user_id, "user", user_input)
         _log_chat(db, user_id, "assistant", mentor_response["text"])
@@ -178,11 +181,11 @@ def advance_lesson(
         )
         context = "\n\n".join(chunk["chunk_text"] for chunk in chunks)
         prompt = (
-            f"Use only the provided official context to explain '{principle.title}' faithfully and clearly.\n\n"
-            f"Context:\n{context}\n\n"
-            "Deliver practical meaning in plain language."
+            f"As the Leadership Avatar, explain the official meaning of '{principle.title}' to the employee in an inspiring, easy-to-digest conversational way.\n\n"
+            f"Official Guidance Context:\n{context}"
         )
         mentor_response = _run_structured_call("official_principle", prompt)
+        mentor_response["avatar_state"] = "Explaining Principle"
         progress.current_step = "examples"
         _log_chat(db, user_id, "assistant", mentor_response["text"], [c["id"] for c in chunks])
         db.commit()
@@ -201,10 +204,11 @@ def advance_lesson(
         )
         context = "\n\n".join(chunk["chunk_text"] for chunk in chunks)
         prompt = (
-            f"Using this context, produce 2-3 concise workplace examples demonstrating '{principle.title}' in action.\n\n"
+            f"As the Leadership Avatar, share 2-3 vivid practical workplace examples of putting '{principle.title}' into action.\n\n"
             f"Context:\n{context}"
         )
         mentor_response = _run_structured_call("examples", prompt)
+        mentor_response["avatar_state"] = "Sharing Real Examples"
         progress.current_step = "reflection"
         _log_chat(db, user_id, "assistant", mentor_response["text"], [c["id"] for c in chunks])
         db.commit()
@@ -218,10 +222,11 @@ def advance_lesson(
     if current_step == "reflection":
         if not user_input:
             prompt = (
-                f"Ask one reflective, practical question prompting the learner to apply '{principle.title}' "
-                f"considering its key psychometric tension ({principle.psychometric_tension})."
+                f"As the Leadership Avatar, ask the employee an encouraging reflection question: "
+                f"How will they demonstrate '{principle.title}' in their own role and projects this week?"
             )
             mentor_response = _run_structured_call("reflection", prompt)
+            mentor_response["avatar_state"] = "Listening to Employee"
             _log_chat(db, user_id, "assistant", mentor_response["text"])
             db.commit()
             return {
@@ -248,10 +253,11 @@ def advance_lesson(
                 db.add(UserBadge(user_id=user_id, badge_id=badge.id, earned_at=datetime.now(timezone.utc)))
 
         prompt = (
-            f"Create a motivational completion message: congratulate the learner for completing '{principle.title}', "
-            f"mention they earned {settings.lesson_xp_reward} XP, and reinforce one behavior to sustain excellence."
+            f"As the Leadership Avatar, warmly congratulate the employee for mastering '{principle.title}'! "
+            f"Mention they earned {settings.lesson_xp_reward} XP and unlocked the '{badge.name if badge else 'Principle'}' badge."
         )
         mentor_response = _run_structured_call("completion", prompt)
+        mentor_response["avatar_state"] = "Celebrating Achievement"
         _log_chat(db, user_id, "assistant", mentor_response["text"])
         db.commit()
         return {
@@ -262,8 +268,9 @@ def advance_lesson(
         }
 
     if current_step == "completion":
-        prompt = "Return a short completion reminder and encourage the learner to ask a mentor question."
+        prompt = f"As the Leadership Avatar, warmly encourage the employee as they continue their leadership journey with '{principle.title}'."
         mentor_response = _run_structured_call("completion", prompt)
+        mentor_response["avatar_state"] = "Standing By"
         _log_chat(db, user_id, "assistant", mentor_response["text"])
         db.commit()
         return {
