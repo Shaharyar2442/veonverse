@@ -1,74 +1,49 @@
 import json
+import os
 import time
 from collections.abc import Callable
 from typing import Any
 
-import boto3
-from botocore.exceptions import ClientError
+os.environ["USE_TORCH"] = "1"
+os.environ["USE_TF"] = "0"
+
+import requests
+from sentence_transformers import SentenceTransformer
 
 from app.config import settings
 
 
-RETRYABLE_CODES = {
-    "ThrottlingException",
-    "TooManyRequestsException",
-    "ServiceUnavailableException",
-    "InternalServerException",
-    "ModelTimeoutException",
-}
+RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 
 
 class BedrockService:
     def __init__(self) -> None:
-        self.client = boto3.client("bedrock-runtime", region_name=settings.aws_region or "us-east-1")
+        self._embedding_model: SentenceTransformer | None = None
 
     def is_configured(self) -> bool:
-        return bool(
-            settings.bedrock_model_id
-            and settings.bedrock_embedding_model_id
-            and settings.bedrock_model_id != "placeholder"
-            and settings.bedrock_embedding_model_id != "placeholder"
-        )
+        return bool(settings.groq_api_key and settings.groq_model_id)
 
     def _retry(self, fn: Callable[[], Any], max_attempts: int = 5) -> Any:
         for attempt in range(1, max_attempts + 1):
             try:
                 return fn()
-            except ClientError as exc:
-                code = exc.response.get("Error", {}).get("Code", "")
-                if code in RETRYABLE_CODES and attempt < max_attempts:
+            except requests.HTTPError as exc:
+                status_code = exc.response.status_code if exc.response is not None else 0
+                if status_code in RETRYABLE_STATUS_CODES and attempt < max_attempts:
                     time.sleep(2 ** (attempt - 1))
                     continue
                 raise
 
+    def _get_embedding_model(self) -> SentenceTransformer:
+        if self._embedding_model is None:
+            self._embedding_model = SentenceTransformer(settings.local_embedding_model)
+        return self._embedding_model
+
     def embed_text(self, text: str, input_type: str = "search_document") -> list[float]:
-        if not self.is_configured():
-            return [0.0] * 64
-
-        model_id = settings.bedrock_embedding_model_id
-
-        def _invoke():
-            if "cohere" in model_id.lower():
-                payload = {"texts": [text], "input_type": input_type}
-            else:
-                payload = {"inputText": text}
-
-            return self.client.invoke_model(
-                modelId=model_id,
-                contentType="application/json",
-                accept="application/json",
-                body=json.dumps(payload),
-            )
-
-        response = self._retry(_invoke)
-        raw_body = response["body"].read()
-        body = json.loads(raw_body)
-
-        if "embedding" in body:
-            return body["embedding"]
-        if "embeddings" in body and body["embeddings"]:
-            return body["embeddings"][0]
-        raise RuntimeError(f"Unsupported embedding response format: {body}")
+        _ = input_type
+        embedding_model = self._get_embedding_model()
+        vector = embedding_model.encode(text, normalize_embeddings=True)
+        return [float(value) for value in vector]
 
     def converse_structured(
         self,
@@ -79,31 +54,41 @@ class BedrockService:
         max_tokens: int = 700,
     ) -> dict[str, Any]:
         if not self.is_configured():
-            raise RuntimeError("Bedrock is not configured")
+            raise RuntimeError("Groq is not configured")
+
+        schema_str = json.dumps(schema, separators=(",", ":"))
+        composed_user_prompt = (
+            f"{user_prompt}\n\n"
+            "Return strictly valid JSON using this schema. Do not include markdown fences.\n"
+            f"Schema: {schema_str}"
+        )
 
         def _invoke():
-            return self.client.converse(
-                modelId=settings.bedrock_model_id,
-                system=[{"text": system_prompt}],
-                messages=[{"role": "user", "content": [{"text": user_prompt}]}],
-                inferenceConfig={"temperature": temperature, "maxTokens": max_tokens},
-                toolConfig={
-                    "tools": [
-                        {
-                            "toolSpec": {
-                                "name": "emit_response",
-                                "description": "Return the final structured lesson response.",
-                                "inputSchema": {"json": schema},
-                            }
-                        }
-                    ],
-                    "toolChoice": {"tool": {"name": "emit_response"}},
+            response = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {settings.groq_api_key}",
+                    "Content-Type": "application/json",
                 },
+                json={
+                    "model": settings.groq_model_id,
+                    "temperature": temperature,
+                    "max_tokens": max_tokens,
+                    "response_format": {"type": "json_object"},
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": composed_user_prompt},
+                    ],
+                },
+                timeout=60,
             )
+            response.raise_for_status()
+            body = response.json()
+            content = body["choices"][0]["message"]["content"]
+            return json.loads(content)
 
-        response = self._retry(_invoke)
-        content = response["output"]["message"]["content"]
-        for item in content:
-            if "toolUse" in item:
-                return item["toolUse"]["input"]
-        raise RuntimeError(f"Structured output was not returned by model: {content}")
+        structured = self._retry(_invoke)
+        for required_key in ("step", "text", "options", "avatar_state"):
+            if required_key not in structured:
+                raise RuntimeError(f"Groq structured output missing key: {required_key}")
+        return structured

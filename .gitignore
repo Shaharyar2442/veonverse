@@ -1,0 +1,28 @@
+# Environment files
+.env
+*.env
+backend/.env
+frontend/.env
+
+# Databases & local state
+*.db
+*.sqlite3
+veonverse.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Node & Frontend
+node_modules/
+dist/
+.vite/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

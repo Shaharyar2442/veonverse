@@ -44,6 +44,9 @@ class ProgressItem(BaseModel):
 class UserProgressResponse(BaseModel):
     user_id: int
     xp: int
+    level: int
+    streak_count: int
+    xp_to_next_level: int
     progress: list[ProgressItem]
 
 
@@ -57,3 +60,20 @@ class BadgeItem(BaseModel):
 class UserBadgesResponse(BaseModel):
     user_id: int
     badges: list[BadgeItem]
+
+
+class PrincipleItem(BaseModel):
+    id: int
+    number: int
+    title: str
+    official_text: str
+    summary: str
+    psychometric_tension: str | None = None
+    hogan_competencies: str | None = None
+    behavioral_domains: str | None = None
+    status: str = "not_started"
+
+
+class PrincipleListResponse(BaseModel):
+    principles: list[PrincipleItem]
+

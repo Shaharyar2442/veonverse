@@ -1,7 +1,19 @@
 from datetime import datetime
-
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, TypeDecorator
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from pgvector.sqlalchemy import Vector
+
+from app.config import settings
+
+
+class VectorType(TypeDecorator):
+    impl = JSON
+    cache_ok = True
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == "postgresql":
+            return dialect.type_descriptor(Vector(settings.embedding_dimension))
+        return dialect.type_descriptor(JSON)
 
 
 class Base(DeclarativeBase):
@@ -16,6 +28,9 @@ class Principle(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     official_text: Mapped[str] = mapped_column(Text, nullable=False)
     summary: Mapped[str] = mapped_column(Text, nullable=False)
+    psychometric_tension: Mapped[str | None] = mapped_column(Text, nullable=True)
+    hogan_competencies: Mapped[str | None] = mapped_column(Text, nullable=True)
+    behavioral_domains: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
 class User(Base):
@@ -66,3 +81,14 @@ class ChatMessage(Base):
     content: Mapped[str] = mapped_column(Text, nullable=False)
     retrieved_chunk_ids: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class LeadershipChunk(Base):
+    __tablename__ = "leadership_chunks"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    chunk_text: Mapped[str] = mapped_column(Text, nullable=False)
+    embedding: Mapped[list[float]] = mapped_column(VectorType, nullable=False)
+    principle_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    chunk_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    source_url: Mapped[str] = mapped_column(String(1024), nullable=False)

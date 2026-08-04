@@ -5,20 +5,20 @@ This pilot implements one leadership principle end-to-end:
 
 ## Stack
 - Backend: FastAPI + PostgreSQL
-- LLM/Embeddings: AWS Bedrock (Converse + embedding model)
-- Vector store: OpenSearch k-NN index (`leadership_chunks`)
+- LLM: Groq Chat Completions API
+- Embeddings: local sentence-transformers model
+- Vector store: PostgreSQL + pgvector (`leadership_chunks` table)
 - Frontend: React (Vite)
 - Local orchestration: docker-compose
 
 ## Environment
 1. Copy `.env.example` to `.env`.
-2. Fill these required variables with real account values:
-   - `AWS_REGION`
-   - `BEDROCK_MODEL_ID`
-   - `BEDROCK_EMBEDDING_MODEL_ID`
-   - `OPENSEARCH_ENDPOINT`
-   - `OPENSEARCH_INDEX`
-3. Configure AWS credentials through profile/session/instance role (never in code).
+2. Fill these required variables:
+   - `GROQ_API_KEY`
+   - `GROQ_MODEL_ID`
+   - `LOCAL_EMBEDDING_MODEL`
+   - `EMBEDDING_DIMENSION`
+   - `DATABASE_URL`
 
 ## Run
 ```bash
@@ -38,7 +38,7 @@ python ingest.py --principle-id 1 --source-url https://example.com/principles --
 The script prints:
 - generated chunk count
 - successful index writes
-- verified count in OpenSearch for `principle_id`
+- verified count in PostgreSQL for `principle_id`
 
 ## Retrieval Test
 ```bash

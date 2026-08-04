@@ -2,24 +2,27 @@ from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.database import SessionLocal, engine, get_db
-from app.models import Badge, Base, ChatMessage, User, UserBadge, UserProgress
+from app.models import Badge, Base, ChatMessage, Principle, User, UserBadge, UserProgress
 from app.schemas import (
     BadgeItem,
     LessonNextRequest,
     LessonStepResponse,
     MentorAskRequest,
     MentorAskResponse,
+    PrincipleItem,
+    PrincipleListResponse,
     ProgressItem,
     UserBadgesResponse,
     UserProgressResponse,
 )
 from app.seed import seed_initial_data
 from app.services.bedrock import BedrockService
+from app.services.gamification import compute_level, xp_to_next_level
 from app.services.lesson import STEP_TO_NUMBER, advance_lesson
 from app.services.retrieval import retrieve_context
 
@@ -46,6 +49,9 @@ MENTOR_SCHEMA = {
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    if settings.database_url.startswith("postgresql"):
+        with engine.begin() as conn:
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
@@ -63,6 +69,56 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/principles", response_model=PrincipleListResponse)
+def list_principles(user_id: int = 1, db: Session = Depends(get_db)):
+    principles = db.execute(select(Principle).order_by(Principle.number)).scalars().all()
+    user_progress_items = db.execute(
+        select(UserProgress).where(UserProgress.user_id == user_id)
+    ).scalars().all()
+    status_map = {item.principle_id: item.status for item in user_progress_items}
+
+    items = [
+        PrincipleItem(
+            id=p.id,
+            number=p.number,
+            title=p.title,
+            official_text=p.official_text,
+            summary=p.summary,
+            psychometric_tension=p.psychometric_tension,
+            hogan_competencies=p.hogan_competencies,
+            behavioral_domains=p.behavioral_domains,
+            status=status_map.get(p.id, "not_started"),
+        )
+        for p in principles
+    ]
+    return {"principles": items}
+
+
+@app.get("/principles/{principle_id}", response_model=PrincipleItem)
+def get_principle(principle_id: int, user_id: int = 1, db: Session = Depends(get_db)):
+    p = db.execute(select(Principle).where(Principle.id == principle_id)).scalar_one_or_none()
+    if not p:
+        raise HTTPException(status_code=404, detail=f"Principle {principle_id} not found.")
+
+    progress = db.execute(
+        select(UserProgress).where(
+            UserProgress.user_id == user_id, UserProgress.principle_id == principle_id
+        )
+    ).scalar_one_or_none()
+
+    return PrincipleItem(
+        id=p.id,
+        number=p.number,
+        title=p.title,
+        official_text=p.official_text,
+        summary=p.summary,
+        psychometric_tension=p.psychometric_tension,
+        hogan_competencies=p.hogan_competencies,
+        behavioral_domains=p.behavioral_domains,
+        status=progress.status if progress else "not_started",
+    )
 
 
 @app.post("/lessons/{principle_id}/next", response_model=LessonStepResponse)
@@ -135,6 +191,9 @@ def get_progress(user_id: int, db: Session = Depends(get_db)):
     return {
         "user_id": user_id,
         "xp": user.xp,
+        "level": user.level if user.level else compute_level(user.xp),
+        "streak_count": user.streak_count,
+        "xp_to_next_level": xp_to_next_level(user.xp),
         "progress": [
             ProgressItem(
                 principle_id=item.principle_id,

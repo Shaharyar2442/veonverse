@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.models import Badge, ChatMessage, Principle, User, UserBadge, UserProgress
 from app.services.bedrock import BedrockService
+from app.services.gamification import award_xp_and_touch_activity
 from app.services.retrieval import retrieve_context
 
 
@@ -124,12 +125,14 @@ def advance_lesson(
 
     progress = _get_or_create_progress(db, user_id, principle_id)
     current_step = progress.current_step
+    award_xp_and_touch_activity(db, user, 0)
 
     if current_step == "intro":
         prompt = (
-            "Generate a realistic workplace scenario where mediocrity may be accepted unless challenged. "
-            "Provide exactly 4 action options that vary in quality and courage. "
-            f"Principle title: {principle.title}. Official text: {principle.official_text}"
+            f"Generate a realistic corporate workplace scenario based on the leadership principle '{principle.title}'.\n"
+            f"Psychometric Tension: {principle.psychometric_tension or 'Standard vs High Performance'}.\n"
+            f"Official principle text: {principle.official_text}\n"
+            "Provide exactly 4 distinct action options that test the candidate along this psychometric forced choice tension."
         )
         mentor_response = _run_structured_call("intro", prompt, options_expected=True)
         if not mentor_response.get("options") or len(mentor_response["options"]) != 4:
@@ -150,9 +153,10 @@ def advance_lesson(
             raise ValueError("A selected scenario option is required for the discussion step.")
         progress.chosen_scenario_answer = user_input
         prompt = (
-            "The learner selected the following option in the mediocrity scenario: "
-            f"'{user_input}'. Respond with coaching feedback: what they did well, what excellence requires, "
-            "and one concrete adjustment."
+            f"The learner selected this option in the '{principle.title}' scenario:\n"
+            f"'{user_input}'.\n"
+            f"Evaluate their choice against Hogan Competencies: {principle.hogan_competencies or 'Leadership'}.\n"
+            "Respond with coaching feedback: what they did well, what excellence requires, and one concrete adjustment."
         )
         mentor_response = _run_structured_call("discussion", prompt)
         progress.current_step = "official_principle"
@@ -168,13 +172,13 @@ def advance_lesson(
 
     if current_step == "official_principle":
         chunks = retrieve_context(
-            query="Explain We Fight Against Mediocrity faithfully to official guidance.",
+            query=f"Explain {principle.title} faithfully to official guidance.",
             principle_id=principle_id,
             k=4,
         )
         context = "\n\n".join(chunk["chunk_text"] for chunk in chunks)
         prompt = (
-            "Use only the provided official context to explain this principle faithfully and clearly.\n\n"
+            f"Use only the provided official context to explain '{principle.title}' faithfully and clearly.\n\n"
             f"Context:\n{context}\n\n"
             "Deliver practical meaning in plain language."
         )
@@ -191,13 +195,13 @@ def advance_lesson(
 
     if current_step == "examples":
         chunks = retrieve_context(
-            query="Give high-standard workplace examples of fighting mediocrity.",
+            query=f"Give workplace examples of {principle.title}.",
             principle_id=principle_id,
             k=4,
         )
         context = "\n\n".join(chunk["chunk_text"] for chunk in chunks)
         prompt = (
-            "Using this context, produce 2-3 concise workplace examples demonstrating this principle in action.\n\n"
+            f"Using this context, produce 2-3 concise workplace examples demonstrating '{principle.title}' in action.\n\n"
             f"Context:\n{context}"
         )
         mentor_response = _run_structured_call("examples", prompt)
@@ -214,8 +218,8 @@ def advance_lesson(
     if current_step == "reflection":
         if not user_input:
             prompt = (
-                "Ask one reflective, practical question that prompts the learner to identify where they "
-                "currently accept mediocrity and what concrete standard they will raise this week."
+                f"Ask one reflective, practical question prompting the learner to apply '{principle.title}' "
+                f"considering its key psychometric tension ({principle.psychometric_tension})."
             )
             mentor_response = _run_structured_call("reflection", prompt)
             _log_chat(db, user_id, "assistant", mentor_response["text"])
@@ -230,22 +234,21 @@ def advance_lesson(
         progress.reflection_response = user_input
         _log_chat(db, user_id, "user", user_input)
 
-        user.xp += settings.lesson_xp_reward
+        award_xp_and_touch_activity(db, user, settings.lesson_xp_reward)
         progress.current_step = "completion"
         progress.status = "completed"
         progress.completed_at = datetime.now(timezone.utc)
 
-        badge = db.execute(select(Badge).where(Badge.id == 1)).scalar_one_or_none()
-        if not badge:
-            raise RuntimeError("Required completion badge is missing.")
-        existing_badge = db.execute(
-            select(UserBadge).where(UserBadge.user_id == user_id, UserBadge.badge_id == badge.id)
-        ).scalar_one_or_none()
-        if not existing_badge:
-            db.add(UserBadge(user_id=user_id, badge_id=badge.id, earned_at=datetime.now(timezone.utc)))
+        badge = db.execute(select(Badge).where(Badge.id == principle_id)).scalar_one_or_none()
+        if badge:
+            existing_badge = db.execute(
+                select(UserBadge).where(UserBadge.user_id == user_id, UserBadge.badge_id == badge.id)
+            ).scalar_one_or_none()
+            if not existing_badge:
+                db.add(UserBadge(user_id=user_id, badge_id=badge.id, earned_at=datetime.now(timezone.utc)))
 
         prompt = (
-            "Create a motivational completion message: congratulate the learner for completing the principle, "
+            f"Create a motivational completion message: congratulate the learner for completing '{principle.title}', "
             f"mention they earned {settings.lesson_xp_reward} XP, and reinforce one behavior to sustain excellence."
         )
         mentor_response = _run_structured_call("completion", prompt)

@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 const USER_ID = 1;
-const PRINCIPLE_ID = 1;
 
 async function api(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -17,6 +16,8 @@ async function api(path, options = {}) {
 }
 
 export default function App() {
+  const [principles, setPrinciples] = useState([]);
+  const [activePrincipleId, setActivePrincipleId] = useState(1);
   const [messages, setMessages] = useState([]);
   const [progress, setProgress] = useState(null);
   const [badges, setBadges] = useState([]);
@@ -26,7 +27,12 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const currentStep = progress?.progress?.find((p) => p.principle_id === PRINCIPLE_ID);
+  const activePrinciple = useMemo(
+    () => principles.find((p) => p.id === activePrincipleId) || principles[0],
+    [principles, activePrincipleId]
+  );
+
+  const currentStep = progress?.progress?.find((p) => p.principle_id === activePrincipleId);
   const stepIndicator = `${currentStep?.step_number || 1} / 6`;
 
   const latestLessonMessage = useMemo(
@@ -34,17 +40,23 @@ export default function App() {
     [messages]
   );
 
-  async function refreshProgressAndBadges() {
-    const [progressData, badgesData] = await Promise.all([
-      api(`/users/${USER_ID}/progress`),
-      api(`/users/${USER_ID}/badges`),
-    ]);
-    setProgress(progressData);
-    setBadges(badgesData.badges || []);
+  async function loadData() {
+    try {
+      const [principlesData, progressData, badgesData] = await Promise.all([
+        api(`/principles?user_id=${USER_ID}`),
+        api(`/users/${USER_ID}/progress`),
+        api(`/users/${USER_ID}/badges`),
+      ]);
+      setPrinciples(principlesData.principles || []);
+      setProgress(progressData);
+      setBadges(badgesData.badges || []);
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   useEffect(() => {
-    refreshProgressAndBadges().catch((err) => setError(err.message));
+    loadData();
   }, []);
 
   async function handleNextLesson(input = null) {
@@ -52,7 +64,7 @@ export default function App() {
     setError("");
     try {
       const payload = { user_id: USER_ID, user_input: input };
-      const result = await api(`/lessons/${PRINCIPLE_ID}/next`, {
+      const result = await api(`/lessons/${activePrincipleId}/next`, {
         method: "POST",
         body: JSON.stringify(payload),
       });
@@ -65,10 +77,11 @@ export default function App() {
           options: result.options,
           avatarState: result.avatar_state,
           step: result.step,
+          principleId: activePrincipleId,
         },
       ]);
       setSelectedOption("");
-      await refreshProgressAndBadges();
+      await loadData();
       return result;
     } catch (err) {
       setError(err.message);
@@ -80,14 +93,14 @@ export default function App() {
 
   async function submitSelectedOption() {
     if (!selectedOption) return;
-    setMessages((prev) => [...prev, { kind: "lesson", role: "user", text: selectedOption }]);
+    setMessages((prev) => [...prev, { kind: "lesson", role: "user", text: selectedOption, principleId: activePrincipleId }]);
     await handleNextLesson(selectedOption);
   }
 
   async function submitReflection() {
     if (!reflectionInput.trim()) return;
     const reflection = reflectionInput.trim();
-    setMessages((prev) => [...prev, { kind: "lesson", role: "user", text: reflection }]);
+    setMessages((prev) => [...prev, { kind: "lesson", role: "user", text: reflection, principleId: activePrincipleId }]);
     setReflectionInput("");
     await handleNextLesson(reflection);
   }
@@ -97,7 +110,7 @@ export default function App() {
     const question = mentorQuestion.trim();
     setLoading(true);
     setError("");
-    setMessages((prev) => [...prev, { kind: "mentor", role: "user", text: question }]);
+    setMessages((prev) => [...prev, { kind: "mentor", role: "user", text: question, principleId: activePrincipleId }]);
     setMentorQuestion("");
     try {
       const result = await api("/mentor/ask", {
@@ -105,7 +118,7 @@ export default function App() {
         body: JSON.stringify({
           user_id: USER_ID,
           question,
-          principle_id: PRINCIPLE_ID,
+          principle_id: activePrincipleId,
         }),
       });
       setMessages((prev) => [
@@ -116,115 +129,181 @@ export default function App() {
           text: result.text,
           avatarState: result.avatar_state,
           sources: result.sources,
+          principleId: activePrincipleId,
         },
       ]);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
-      refreshProgressAndBadges().catch(() => undefined);
+      loadData().catch(() => undefined);
     }
+  }
+
+  function handleSelectPrinciple(id) {
+    setActivePrincipleId(id);
+    setSelectedOption("");
+    setReflectionInput("");
   }
 
   return (
     <div className="app">
       <header className="topbar">
-        <h1>VEONVERSE AI Leadership Mentor</h1>
+        <div>
+          <h1>VEONVERSE AI Leadership Mentor</h1>
+          <p className="subtitle">10 Core Leadership Principles & Psychometric Hogan Competency Framework</p>
+        </div>
         <div className="stats">
-          <span>XP: {progress?.xp ?? 0}</span>
-          <span>Step: {stepIndicator}</span>
-          <span>Badges: {badges.length}</span>
+          <div className="stat-pill">Level <strong>{progress?.level ?? 1}</strong></div>
+          <div className="stat-pill">XP <strong>{progress?.xp ?? 0}</strong></div>
+          <div className="stat-pill">Step <strong>{stepIndicator}</strong></div>
+          <div className="stat-pill">Badges <strong>{badges.length}</strong></div>
         </div>
       </header>
 
-      <main className="content">
+      <main className="main-layout">
+        {/* Left Navigation Sidebar: 10 Principles Grid */}
+        <aside className="panel principles-sidebar">
+          <h2>Leadership Principles</h2>
+          <div className="principle-list">
+            {principles.map((p) => {
+              const isSelected = p.id === activePrincipleId;
+              const pProgress = progress?.progress?.find((item) => item.principle_id === p.id);
+              const isCompleted = pProgress?.status === "completed";
+              return (
+                <div
+                  key={p.id}
+                  className={`principle-card ${isSelected ? "active" : ""} ${isCompleted ? "completed" : ""}`}
+                  onClick={() => handleSelectPrinciple(p.id)}
+                >
+                  <div className="principle-card-header">
+                    <span className="p-number">#{p.number}</span>
+                    <span className="p-status-badge">{isCompleted ? "✓ Completed" : pProgress ? `Step ${pProgress.step_number}/6` : "Ready"}</span>
+                  </div>
+                  <h3 className="p-title">{p.title}</h3>
+                  <div className="p-tension-tag">{p.psychometric_tension}</div>
+                </div>
+              );
+            })}
+          </div>
+        </aside>
+
+        {/* Center Panel: Active Principle Detail & Interactive Chat */}
         <section className="panel chat">
+          {activePrinciple && (
+            <div className="active-principle-banner">
+              <h2>#{activePrinciple.number}. {activePrinciple.title}</h2>
+              <p className="summary">{activePrinciple.summary}</p>
+              <div className="meta-tags">
+                <span className="tag tension">⚡ Tension: {activePrinciple.psychometric_tension}</span>
+                <span className="tag hogan">🎯 Hogan Targets: {activePrinciple.hogan_competencies}</span>
+                <span className="tag domain">🌐 Domain: {activePrinciple.behavioral_domains}</span>
+              </div>
+            </div>
+          )}
+
           <div className="chat-header">
-            <h2>Lesson + Mentor Chat</h2>
-            <button onClick={() => handleNextLesson()} disabled={loading}>
-              Advance Lesson
+            <h3>Interactive Lesson & RAG Coaching</h3>
+            <button onClick={() => handleNextLesson()} disabled={loading} className="btn-primary">
+              {messages.filter((m) => m.principleId === activePrincipleId).length === 0
+                ? "Start Lesson"
+                : "Advance Step"}
             </button>
           </div>
+
           <div className="messages">
-            {messages.map((message, idx) => (
-              <div key={idx} className={`bubble ${message.role === "user" ? "user" : "mentor"}`}>
-                <div className="meta">
-                  <strong>{message.role === "user" ? "You" : "Mentor"}</strong>
-                  {message.avatarState ? <em>{message.avatarState}</em> : null}
+            {messages
+              .filter((m) => m.principleId === activePrincipleId)
+              .map((message, idx) => (
+                <div key={idx} className={`bubble ${message.role === "user" ? "user" : "mentor"}`}>
+                  <div className="meta">
+                    <strong>{message.role === "user" ? "You" : "Mentor"}</strong>
+                    {message.avatarState ? <em>{message.avatarState}</em> : null}
+                  </div>
+                  <p>{message.text}</p>
+                  {message.sources?.length ? (
+                    <small className="sources-tag">RAG Sources: Chunk IDs #{message.sources.join(", #")}</small>
+                  ) : null}
                 </div>
-                <p>{message.text}</p>
-                {message.sources?.length ? (
-                  <small>Retrieved Chunks: {message.sources.join(", ")}</small>
-                ) : null}
+              ))}
+            {messages.filter((m) => m.principleId === activePrincipleId).length === 0 && (
+              <div className="empty-chat-notice">
+                Click <strong>"Start Lesson"</strong> to trigger the Psychometric Forced-Choice scenario or ask the RAG Mentor a question below.
               </div>
-            ))}
+            )}
           </div>
 
-          {latestLessonMessage?.options?.length === 4 ? (
+          {latestLessonMessage?.principleId === activePrincipleId && latestLessonMessage?.options?.length === 4 ? (
             <div className="actions">
-              <h3>Select a scenario option</h3>
+              <h3>Select a Scenario Option (Forced-Choice Assessment)</h3>
               <div className="option-grid">
                 {latestLessonMessage.options.map((option, idx) => (
                   <button
                     key={idx}
-                    className={selectedOption === option ? "selected" : ""}
+                    className={`option-btn ${selectedOption === option ? "selected" : ""}`}
                     onClick={() => setSelectedOption(option)}
                     disabled={loading}
                   >
-                    {option}
+                    <span className="opt-letter">{String.fromCharCode(65 + idx)}.</span> {option}
                   </button>
                 ))}
               </div>
-              <button onClick={submitSelectedOption} disabled={loading || !selectedOption}>
+              <button onClick={submitSelectedOption} disabled={loading || !selectedOption} className="btn-submit">
                 Submit Option
               </button>
             </div>
           ) : null}
 
-          {latestLessonMessage?.step === "reflection" ? (
+          {latestLessonMessage?.principleId === activePrincipleId && latestLessonMessage?.step === "reflection" ? (
             <div className="actions">
               <h3>Your Reflection</h3>
               <textarea
                 value={reflectionInput}
                 onChange={(e) => setReflectionInput(e.target.value)}
-                placeholder="Write your reflection..."
+                placeholder="Describe a workplace situation where you will apply this principle..."
+                rows={3}
               />
-              <button onClick={submitReflection} disabled={loading || !reflectionInput.trim()}>
+              <button onClick={submitReflection} disabled={loading || !reflectionInput.trim()} className="btn-submit">
                 Submit Reflection
               </button>
             </div>
           ) : null}
 
-          <div className="actions">
-            <h3>Ask the Mentor</h3>
+          <div className="actions mentor-ask-section">
+            <h3>Ask RAG Mentor</h3>
             <div className="mentor-row">
               <input
                 value={mentorQuestion}
                 onChange={(e) => setMentorQuestion(e.target.value)}
-                placeholder="Ask a principle-related question..."
+                placeholder={`Ask a question about ${activePrinciple?.title || "this principle"}...`}
+                onKeyDown={(e) => e.key === "Enter" && askMentor()}
               />
-              <button onClick={askMentor} disabled={loading || !mentorQuestion.trim()}>
-                Ask
+              <button onClick={askMentor} disabled={loading || !mentorQuestion.trim()} className="btn-secondary">
+                Ask Mentor
               </button>
             </div>
           </div>
         </section>
 
-        <section className="panel badges">
-          <h2>Earned Badges</h2>
+        {/* Right Panel: Badges & Profile Progress */}
+        <aside className="panel badges-sidebar">
+          <h2>Earned Badges ({badges.length})</h2>
           {badges.length === 0 ? (
-            <p>No badges yet.</p>
+            <p className="no-badges">No badges earned yet. Complete principles to unlock achievements!</p>
           ) : (
-            <ul>
-              {badges.map((badge) => (
-                <li key={`${badge.badge_id}-${badge.earned_at}`}>
-                  <strong>{badge.name}</strong>
-                  <p>{badge.criteria}</p>
-                </li>
+            <div className="badge-grid">
+              {badges.map((b) => (
+                <div className="badge-card" key={`${b.badge_id}-${b.earned_at}`}>
+                  <div className="badge-icon">🏆</div>
+                  <div className="badge-info">
+                    <strong>{b.name}</strong>
+                    <p>{b.criteria}</p>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
-        </section>
+        </aside>
       </main>
 
       {error ? <div className="error">{error}</div> : null}
