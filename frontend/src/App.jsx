@@ -9,10 +9,8 @@ export default function App() {
   const [currentStageIndex, setCurrentStageIndex] = useState(0);
   const [dialogueStep, setDialogueStep] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState(null);
-  const [score, setScore] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [speechRate, setSpeechRate] = useState(1.0);
 
   const currentScenario = C_FACTOR_SCENARIOS[currentStageIndex] || C_FACTOR_SCENARIOS[0];
 
@@ -28,10 +26,10 @@ export default function App() {
     if (!isMuted && currentScenario?.dialogue) {
       const textToSpeak = currentScenario.dialogue[dialogueStep];
       if (textToSpeak) {
-        anamAvatar.speak(textToSpeak, speechRate);
+        anamAvatar.speak(textToSpeak);
       }
     }
-  }, [currentStageIndex, dialogueStep, isMuted, speechRate]);
+  }, [currentStageIndex, dialogueStep, isMuted]);
 
   function handleAdvanceDialogue() {
     if (dialogueStep < currentScenario.dialogue.length - 1) {
@@ -41,11 +39,8 @@ export default function App() {
 
   function handleOptionSelect(choice) {
     setSelectedChoice(choice);
-    const scoreAdd = choice.stars === 3 ? 100 : 35;
-    setScore((prev) => prev + scoreAdd);
-
     if (!isMuted && choice.feedback) {
-      anamAvatar.speak(choice.feedback, speechRate);
+      anamAvatar.speak(choice.feedback);
     }
   }
 
@@ -72,23 +67,15 @@ export default function App() {
       ? selectedChoice.feedback
       : currentScenario?.dialogue[dialogueStep];
     if (textToSpeak) {
-      anamAvatar.speak(textToSpeak, speechRate);
+      anamAvatar.speak(textToSpeak);
     }
-  }
-
-  function handleChangeSpeechRate() {
-    setSpeechRate((prev) => {
-      if (prev === 1.0) return 1.25;
-      if (prev === 1.25) return 1.5;
-      return 1.0;
-    });
   }
 
   function toggleMute() {
     if (isMuted) {
       setIsMuted(false);
       const textToSpeak = selectedChoice ? selectedChoice.feedback : currentScenario?.dialogue[dialogueStep];
-      if (textToSpeak) anamAvatar.speak(textToSpeak, speechRate);
+      if (textToSpeak) anamAvatar.speak(textToSpeak);
     } else {
       anamAvatar.stop();
       setIsMuted(true);
@@ -96,12 +83,10 @@ export default function App() {
   }
 
   return (
-    <div className="cfactor-game-root bg-slate-50 text-slate-900 font-sans">
+    <div className="cfactor-game-root font-sans">
       <GameHUD
         currentStage={currentStageIndex + 1}
         totalStages={C_FACTOR_SCENARIOS.length}
-        score={score}
-        energy={100}
         isMuted={isMuted}
         onToggleMute={toggleMute}
         stageName={currentScenario.stageName}
@@ -117,8 +102,6 @@ export default function App() {
           isMuted={isMuted}
           onToggleMute={toggleMute}
           onReplayAudio={handleReplayAudio}
-          speechRate={speechRate}
-          onChangeSpeechRate={handleChangeSpeechRate}
           selectedChoice={selectedChoice}
           dialogueStep={dialogueStep}
         />

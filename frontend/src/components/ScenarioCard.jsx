@@ -63,7 +63,7 @@ export default function ScenarioCard({
 
   return (
     <motion.div
-      className={`bg-white/95 backdrop-blur-xl border border-white/40 rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] flex flex-col z-50 overflow-hidden ${!showChoices && !selectedChoice ? 'cursor-pointer hover:border-indigo-300 transition-colors' : ''}`}
+      className={`bg-[#07121f]/95 backdrop-blur-xl border border-[#1c3148] rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.65)] flex flex-col z-50 overflow-hidden ${!showChoices && !selectedChoice ? 'cursor-pointer hover:border-[#ffca05]/70 transition-colors' : ''}`}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, type: 'spring', bounce: 0.3 }}
@@ -72,25 +72,25 @@ export default function ScenarioCard({
       <div className="p-5 md:p-7">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
-            <MessageSquareQuote size={18} className="text-indigo-600" />
-            <span className="text-xs font-black text-indigo-950 uppercase tracking-wider">
+            <MessageSquareQuote size={18} className="text-[#ffca05]" />
+            <span className="text-xs font-black text-slate-100 uppercase tracking-wider">
               {selectedChoice ? "Executive Decision Matrix" : "Scenario Briefing"}
             </span>
           </div>
-          <span className="text-[10px] md:text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/80 px-3 py-1 rounded-full uppercase tracking-wider">
+          <span className="text-[10px] md:text-xs font-bold text-[#ffca05] bg-[#ffca05]/10 border border-[#ffca05]/30 px-3 py-1 rounded-full uppercase tracking-wider">
             {scenario?.principleTitle}
           </span>
         </div>
 
-        <p className="text-lg md:text-xl font-medium leading-relaxed text-slate-800 min-h-[4rem]">
+        <p className="text-lg md:text-xl font-medium leading-relaxed text-slate-100 min-h-[4rem]">
           {highlightText(displayedText)}
           {isSpeaking && displayedText.length < currentLine.length && (
-            <span className="inline-block w-2.5 h-5 ml-1.5 bg-indigo-500 animate-pulse align-middle"></span>
+            <span className="inline-block w-2.5 h-5 ml-1.5 bg-[#ffca05] animate-pulse align-middle"></span>
           )}
         </p>
 
         {!showChoices && !selectedChoice && (
-          <div className="flex items-center justify-end mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest gap-1">
+          <div className="flex items-center justify-end mt-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest gap-1">
             <MousePointerClick size={12} />
             Click or Space to continue ({dialogueStep + 1}/{scenario.dialogue.length})
           </div>
@@ -102,16 +102,16 @@ export default function ScenarioCard({
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            className="border-t border-slate-100 bg-slate-50/50 p-4"
+            className="border-t border-[#1c3148] bg-[#030b16]/60 p-4"
           >
-            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-2">
+            <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 px-2">
               Select Your Strategic Action (Press A or B):
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {scenario.choices.map((choice) => (
                 <motion.button
                   key={choice.id}
-                  className="bg-white border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 hover:shadow-lg transition-all duration-200 rounded-xl p-4 flex flex-col gap-2 text-left group"
+                  className="bg-[#0b1827] border border-[#29435f] hover:border-[#ffca05] hover:bg-[#122238] hover:shadow-lg hover:shadow-black/30 transition-all duration-200 rounded-xl p-4 flex flex-col gap-2 text-left group"
                   onClick={(e) => {
                     e.stopPropagation();
                     onOptionSelect(choice);
@@ -119,10 +119,10 @@ export default function ScenarioCard({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="bg-indigo-600 text-white font-black text-[10px] w-6 h-6 flex items-center justify-center rounded-md shadow-sm group-hover:bg-indigo-700">
+                  <div className="bg-[#ffca05] text-[#03101f] font-black text-[10px] w-6 h-6 flex items-center justify-center rounded-md shadow-sm group-hover:bg-[#ffd84d]">
                     {choice.id}
                   </div>
-                  <div className="text-sm leading-snug text-slate-800 font-bold group-hover:text-indigo-950">
+                  <div className="text-sm leading-snug text-slate-200 font-bold group-hover:text-white">
                     {choice.text}
                   </div>
                 </motion.button>
@@ -134,15 +134,15 @@ export default function ScenarioCard({
 
       {selectedChoice && (
         <motion.div
-          className="border-t border-slate-100 bg-indigo-50/80 p-4 flex justify-between items-center"
+          className="border-t border-[#1c3148] bg-[#ffca05]/[0.06] p-4 flex justify-between items-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-600">Evaluation complete.</span>
+            <span className="text-xs font-bold text-slate-300">Evaluation complete.</span>
           </div>
           <button
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-6 py-2.5 rounded-full text-xs uppercase tracking-wider shadow-md hover:shadow-lg hover:shadow-indigo-200 transition-all cursor-pointer flex items-center gap-2"
+            className="bg-[#ffca05] hover:bg-[#ffd84d] text-[#03101f] font-extrabold px-6 py-2.5 rounded-full text-xs uppercase tracking-wider shadow-md hover:shadow-lg hover:shadow-amber-400/20 transition-all cursor-pointer flex items-center gap-2"
             onClick={(e) => {
               e.stopPropagation();
               onNextStage();
