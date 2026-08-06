@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { Award, Clock, Maximize2, Volume2, VolumeX, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Award, Layers, Maximize2, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 
 export default function GameHUD({
   currentStage,
@@ -9,17 +8,9 @@ export default function GameHUD({
   energy = 100,
   isMuted,
   onToggleMute,
-  stageName = "PRINCIPLE EXPERIENCE",
+  stageName = "Principle Experience",
+  onSelectStage,
 }) {
-  const [timeLeft, setTimeLeft] = useState(45);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 45));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [currentStage]);
-
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
@@ -29,78 +20,88 @@ export default function GameHUD({
   }
 
   return (
-    <header className="h-16 bg-slate-900/60 backdrop-blur-md border-b border-cyan-500/20 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex items-center justify-between px-6 z-50 relative">
-      {/* Brand & Principle Stage Badge */}
+    <header className="h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm flex items-center justify-between px-6 z-50 relative">
+      {/* Brand & Principle Stage Title */}
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 bg-amber-400 text-slate-950 rounded-lg flex items-center justify-center font-extrabold text-xl shadow-[0_0_15px_rgba(255,199,0,0.4)]">
+        <div className="w-9 h-9 bg-indigo-600 text-white rounded-lg flex items-center justify-center font-black text-xl shadow-md shadow-indigo-100">
           V
         </div>
         <div className="flex flex-col">
-          <span className="text-lg font-extrabold tracking-wide text-white">
-            VEON<span className="text-amber-400">VERSE</span>
-          </span>
-          <span className="text-xs text-cyan-400 bg-cyan-950/80 border border-cyan-500/40 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-            PRINCIPLE {currentStage} OF {totalStages}: {stageName}
+          <div className="flex items-center gap-1.5">
+            <span className="text-base font-extrabold tracking-tight text-slate-900">
+              VEON<span className="text-indigo-600">VERSE</span>
+            </span>
+            <span className="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded border border-indigo-200/60 uppercase tracking-wider">
+              Executive Mentor
+            </span>
+          </div>
+          <span className="text-xs text-slate-500 font-medium">
+            Principle {currentStage} of {totalStages}: <span className="font-semibold text-slate-800">{stageName}</span>
           </span>
         </div>
       </div>
 
-      {/* Center Principle Exploration Progress Bar */}
-      <div className="flex flex-col items-center w-72">
-        <div className="flex justify-between w-full text-xs mb-1">
-          <span className="text-slate-400 font-semibold">EXPLORATION PROGRESS</span>
-          <span className="text-amber-400 font-bold">{Math.round((currentStage / totalStages) * 100)}%</span>
-        </div>
-        <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-cyan-500/30">
-          <motion.div
-            className="h-full bg-gradient-to-r from-amber-400 via-cyan-400 to-purple-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]"
-            initial={{ width: 0 }}
-            animate={{ width: `${(currentStage / totalStages) * 100}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
+      {/* Interactive Principles Timeline Node Selector */}
+      <div className="hidden lg:flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-full border border-slate-200/80 shadow-inner">
+        {Array.from({ length: totalStages }, (_, idx) => {
+          const stageNum = idx + 1;
+          const isActive = stageNum === currentStage;
+          const isPassed = stageNum < currentStage;
+
+          return (
+            <button
+              key={stageNum}
+              onClick={() => onSelectStage && onSelectStage(idx)}
+              className={`w-7 h-7 rounded-full text-xs font-extrabold flex items-center justify-center transition-all duration-200 cursor-pointer ${
+                isActive
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-300 scale-110"
+                  : isPassed
+                  ? "bg-indigo-100 text-indigo-800 hover:bg-indigo-200"
+                  : "bg-white text-slate-500 hover:bg-slate-200 border border-slate-200"
+              }`}
+              title={`Jump to Principle ${stageNum}`}
+            >
+              {stageNum}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Right Metrics & Controls */}
+      {/* Right Metrics & Executive Controls */}
       <div className="flex items-center gap-3">
-        {/* Leadership Mastery Badge */}
+        {/* Leadership Score */}
         <motion.div
-          className="bg-gradient-to-r from-amber-500 to-yellow-600 border border-amber-300/40 text-slate-950 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)] flex items-center gap-2 cursor-pointer"
-          whileHover={{ scale: 1.05 }}
+          className="bg-amber-50 border border-amber-200 text-amber-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm flex items-center gap-2"
+          whileHover={{ scale: 1.03 }}
         >
-          <Award size={15} className="text-slate-950 fill-amber-300" />
-          <span className="text-slate-950/80 text-[10px] uppercase tracking-wider font-extrabold">Mastery</span>
-          <span className="text-slate-950 font-black text-sm">{score}</span>
+          <Award size={15} className="text-amber-600" />
+          <span className="text-amber-700/80 text-[10px] uppercase tracking-wider font-extrabold">XP Score</span>
+          <span className="text-amber-950 font-black text-sm">{score}</span>
         </motion.div>
 
-        {/* Energy Meter */}
-        <div className="bg-slate-900/80 border border-emerald-500/40 text-emerald-300 px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-          <Zap size={15} className="text-emerald-400 fill-emerald-400" />
-          <span className="text-slate-400 text-[10px] uppercase font-bold">Energy</span>
-          <span className="text-emerald-400 font-bold">{energy}%</span>
+        {/* Energy Bar */}
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm flex items-center gap-2">
+          <Zap size={15} className="text-emerald-600 fill-emerald-600" />
+          <span className="text-emerald-700/80 text-[10px] uppercase font-extrabold">Engagement</span>
+          <span className="text-emerald-950 font-black text-xs">{energy}%</span>
         </div>
 
-        {/* Timer Badge */}
-        <div className="bg-slate-900/80 border border-slate-700/80 text-slate-200 px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2">
-          <Clock size={15} className="text-slate-400" />
-          <span className="font-mono text-cyan-400 font-bold">0:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}</span>
-        </div>
-
-        {/* Action Controls */}
+        {/* Mute/Unmute Audio Control */}
         <button
-          className="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700/80 hover:border-cyan-400 hover:bg-cyan-950/40 text-white flex items-center justify-center transition-all duration-200"
+          className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 text-slate-700 flex items-center justify-center transition-all duration-200 cursor-pointer"
           onClick={onToggleMute}
-          title={isMuted ? "Unmute Sound" : "Mute Sound"}
+          title={isMuted ? "Unmute Mentor Audio" : "Mute Mentor Audio"}
         >
-          {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} className="text-amber-400" />}
+          {isMuted ? <VolumeX size={16} className="text-slate-400" /> : <Volume2 size={16} className="text-indigo-600" />}
         </button>
 
+        {/* Fullscreen Control */}
         <button
-          className="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700/80 hover:border-cyan-400 hover:bg-cyan-950/40 text-white flex items-center justify-center transition-all duration-200"
+          className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 text-slate-700 flex items-center justify-center transition-all duration-200 cursor-pointer"
           onClick={toggleFullscreen}
           title="Toggle Fullscreen"
         >
-          <Maximize2 size={16} />
+          <Maximize2 size={16} className="text-slate-600" />
         </button>
       </div>
     </header>

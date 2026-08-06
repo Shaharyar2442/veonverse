@@ -53,7 +53,7 @@ class AnamAvatarService {
     }
   }
 
-  async speak(text, fallbackVoice = true) {
+  async speak(text, rate = 1.0, fallbackVoice = true) {
     this.isSpeaking = true;
     this._notifyStateChange({ isSpeaking: true });
 
@@ -66,7 +66,7 @@ class AnamAvatarService {
     } else if (fallbackVoice && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.0;
+      utterance.rate = rate;
       utterance.pitch = 0.95;
 
       const voices = window.speechSynthesis.getVoices();
@@ -89,7 +89,7 @@ class AnamAvatarService {
       setTimeout(() => {
         this.isSpeaking = false;
         this._notifyStateChange({ isSpeaking: false });
-      }, Math.max(2000, text.length * 50));
+      }, Math.max(2000, (text.length * 50) / rate));
     }
   }
 
