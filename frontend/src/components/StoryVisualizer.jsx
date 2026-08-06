@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const StoryVisualizer = ({ visualConcept, dialogueStep = 0, selectedChoice }) => {
-  const containerStyle = "absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none z-0";
+  const containerStyle = "absolute inset-0 flex items-center justify-center -translate-y-10 md:-translate-y-14 overflow-hidden pointer-events-none z-0";
   const isResolvedCorrect = selectedChoice && selectedChoice.stars === 3;
   const isResolvedWrong = selectedChoice && selectedChoice.stars < 3;
 

@@ -9,7 +9,8 @@ export default function ScenarioCard({
   onOptionSelect,
   selectedChoice,
   onNextStage,
-  isSpeaking
+  isSpeaking,
+  isFinalStage = false,
 }) {
   const [displayedText, setDisplayedText] = useState("");
   const isDialogueComplete = dialogueStep >= (scenario?.dialogue?.length - 1);
@@ -148,7 +149,7 @@ export default function ScenarioCard({
               onNextStage();
             }}
           >
-            <span>Next Scenario</span>
+            <span>{isFinalStage ? "Finish Experience" : "Next Scenario"}</span>
             <ArrowRight size={16} />
           </button>
         </motion.div>
