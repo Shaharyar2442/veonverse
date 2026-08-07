@@ -46,10 +46,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    setPhase("briefing");
-  }, [currentStageIndex]);
-
-  useEffect(() => {
     if (phase !== "dialogue" || selectedChoice) return;
     if (!isMuted && currentScenario?.dialogue) {
       const textToSpeak = currentScenario.dialogue[dialogueStep];
@@ -80,6 +76,8 @@ export default function App() {
   }
 
   function handleNextStage() {
+    anamAvatar.stop();
+
     if (selectedChoice) {
       setTotalScore((prev) => prev + selectedChoice.score);
       setEarnedBadges((prev) => {
@@ -103,13 +101,13 @@ export default function App() {
     });
 
     if (currentStageIndex === C_FACTOR_SCENARIOS.length - 1) {
-      anamAvatar.stop();
       setIsComplete(true);
       return;
     }
 
     setSelectedChoice(null);
     setDialogueStep(0);
+    setPhase("briefing");
     setCurrentStageIndex((prev) => prev + 1);
   }
 
@@ -132,6 +130,7 @@ export default function App() {
     setIsBadgeDrawerOpen(false);
     setSelectedChoice(null);
     setDialogueStep(0);
+    setPhase("briefing");
     setCurrentStageIndex(0);
   }
 

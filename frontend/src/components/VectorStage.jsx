@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { MapPin, RotateCcw, Sparkles, Volume2 } from "lucide-react";
 import { StoryVisualizer } from "./StoryVisualizer";
+import LuxuryBackground from "./LuxuryBackground";
 
 export default function VectorStage({
   locationTag = "Operations Command Center",
@@ -31,9 +32,9 @@ export default function VectorStage({
   return (
     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(18,57,95,0.24),transparent_34%),linear-gradient(135deg,#020811_0%,#06101c_52%,#020811_100%)] flex flex-col justify-between p-6">
       
-      {/* Background Story Visualizer or Spotlight */}
+      {/* Background Story Visualizer or Luxury Ambient */}
       {hideVisualizer ? (
-        <div className="absolute inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_50%_40%,rgba(255,202,5,0.06)_0%,transparent_60%)]" />
+        <LuxuryBackground />
       ) : (
         <StoryVisualizer 
           visualConcept={currentScenario?.visualConcept || 'pulse'} 
