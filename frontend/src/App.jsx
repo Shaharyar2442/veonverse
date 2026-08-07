@@ -12,13 +12,22 @@ export default function App() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [completedStages, setCompletedStages] = useState(new Set());
 
   const currentScenario = C_FACTOR_SCENARIOS[currentStageIndex] || C_FACTOR_SCENARIOS[0];
 
+  const avatarState =
+    selectedChoice && selectedChoice.stars === 3 && !isSpeaking
+      ? "celebrating"
+      : isSpeaking
+      ? "speaking"
+      : "idle";
+
   useEffect(() => {
-    anamAvatar.onStateChange((state) => {
+    const unsubscribe = anamAvatar.onStateChange((state) => {
       if (state.isSpeaking !== undefined) setIsSpeaking(state.isSpeaking);
     });
+    return unsubscribe;
   }, []);
 
   // Speak when dialogueStep changes or stage changes or unmuted
@@ -46,6 +55,12 @@ export default function App() {
   }
 
   function handleNextStage() {
+    setCompletedStages((prev) => {
+      const next = new Set(prev);
+      next.add(currentStageIndex);
+      return next;
+    });
+
     if (currentStageIndex === C_FACTOR_SCENARIOS.length - 1) {
       anamAvatar.stop();
       setIsComplete(true);
@@ -68,6 +83,7 @@ export default function App() {
 
   function handleRestartExperience() {
     setIsComplete(false);
+    setCompletedStages(new Set());
     setSelectedChoice(null);
     setDialogueStep(0);
     setCurrentStageIndex(0);
@@ -102,6 +118,7 @@ export default function App() {
         onToggleMute={toggleMute}
         stageName={currentScenario.stageName}
         onSelectStage={handleSelectStage}
+        completedStages={completedStages}
       />
 
       <main className="game-stage-viewport">
@@ -131,6 +148,7 @@ export default function App() {
             onReplayAudio={handleReplayAudio}
             selectedChoice={selectedChoice}
             dialogueStep={dialogueStep}
+            avatarState={avatarState}
           />
 
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-4xl z-50">

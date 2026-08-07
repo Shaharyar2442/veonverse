@@ -1,4 +1,4 @@
-import { Maximize2, Volume2, VolumeX } from "lucide-react";
+import { Check, Maximize2, Volume2, VolumeX } from "lucide-react";
 
 export default function GameHUD({
   currentStage,
@@ -7,6 +7,7 @@ export default function GameHUD({
   onToggleMute,
   stageName = "Principle Experience",
   onSelectStage,
+  completedStages = new Set(),
 }) {
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -43,6 +44,7 @@ export default function GameHUD({
         {Array.from({ length: totalStages }, (_, idx) => {
           const stageNum = idx + 1;
           const isActive = stageNum === currentStage;
+          const isCompleted = completedStages.has(idx);
           const isPassed = stageNum < currentStage;
 
           return (
@@ -52,13 +54,15 @@ export default function GameHUD({
               className={`w-7 h-7 rounded-full text-xs font-extrabold flex items-center justify-center transition-all duration-200 cursor-pointer ${
                 isActive
                   ? "bg-[#ffca05] text-[#03101f] shadow-md shadow-amber-400/20 scale-110"
+                  : isCompleted
+                  ? "bg-emerald-600/80 text-white hover:bg-emerald-500 shadow-sm shadow-emerald-500/20"
                   : isPassed
                   ? "bg-[#17273a] text-[#ffca05] hover:bg-[#203752]"
                   : "bg-[#0b1827] text-slate-400 hover:bg-[#17273a] border border-[#29435f]"
               }`}
-              title={`Jump to Principle ${stageNum}`}
+              title={`${isCompleted ? "Completed" : "Principle " + stageNum}${isActive ? " (current)" : ""}`}
             >
-              {stageNum}
+              {isCompleted ? <Check size={14} strokeWidth={3} /> : stageNum}
             </button>
           );
         })}

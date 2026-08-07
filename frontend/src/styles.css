@@ -52,7 +52,7 @@ html, body, #root {
   flex-direction: column;
   padding: 0;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
   width: 100%;
   height: calc(100vh - 68px);
 }

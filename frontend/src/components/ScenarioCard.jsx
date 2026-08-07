@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, MessageSquareQuote, MousePointerClick } from "lucide-react";
+import { MessageSquareQuote, MousePointerClick } from "lucide-react";
 import { useEffect, useState } from "react";
+import ResultPanel from "./ResultPanel";
 
 export default function ScenarioCard({
   scenario,
@@ -64,7 +65,9 @@ export default function ScenarioCard({
 
   return (
     <motion.div
-      className={`bg-[#07121f]/95 backdrop-blur-xl border border-[#1c3148] rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.65)] flex flex-col z-50 overflow-hidden ${!showChoices && !selectedChoice ? 'cursor-pointer hover:border-[#ffca05]/70 transition-colors' : ''}`}
+      className={`bg-[#07121f]/95 backdrop-blur-xl border border-[#1c3148] rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.65)] flex flex-col z-50 ${
+        selectedChoice ? "max-h-[60vh] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#29435f] [&::-webkit-scrollbar-thumb]:rounded-full" : "overflow-hidden"
+      } ${!showChoices && !selectedChoice ? 'cursor-pointer hover:border-[#ffca05]/70 transition-colors' : ''}`}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, type: 'spring', bounce: 0.3 }}
@@ -134,25 +137,12 @@ export default function ScenarioCard({
       </AnimatePresence>
 
       {selectedChoice && (
-        <motion.div
-          className="border-t border-[#1c3148] bg-[#ffca05]/[0.06] p-4 flex justify-between items-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-300">Evaluation complete.</span>
-          </div>
-          <button
-            className="bg-[#ffca05] hover:bg-[#ffd84d] text-[#03101f] font-extrabold px-6 py-2.5 rounded-full text-xs uppercase tracking-wider shadow-md hover:shadow-lg hover:shadow-amber-400/20 transition-all cursor-pointer flex items-center gap-2"
-            onClick={(e) => {
-              e.stopPropagation();
-              onNextStage();
-            }}
-          >
-            <span>{isFinalStage ? "Finish Experience" : "Next Scenario"}</span>
-            <ArrowRight size={16} />
-          </button>
-        </motion.div>
+        <ResultPanel
+          choice={selectedChoice}
+          scenario={scenario}
+          onNextStage={onNextStage}
+          isFinalStage={isFinalStage}
+        />
       )}
     </motion.div>
   );

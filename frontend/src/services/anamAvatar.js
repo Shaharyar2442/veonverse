@@ -1,4 +1,4 @@
-import { unsafe_createClientWithApiKey, createClient, AnamEvent } from "@anam-ai/js-sdk";
+import { unsafe_createClientWithApiKey } from "@anam-ai/js-sdk";
 
 /**
  * Anam API Avatar Service Integration
@@ -21,6 +21,9 @@ class AnamAvatarService {
 
   onStateChange(callback) {
     this.onStateChangeCallbacks.push(callback);
+    return () => {
+      this.onStateChangeCallbacks = this.onStateChangeCallbacks.filter((cb) => cb !== callback);
+    };
   }
 
   _notifyStateChange(state) {
@@ -60,8 +63,9 @@ class AnamAvatarService {
     if (this.session && typeof this.session.talk === "function") {
       try {
         await this.session.talk(text);
-      } catch (err) {
-        console.error("Anam session talk error:", err);
+      } finally {
+        this.isSpeaking = false;
+        this._notifyStateChange({ isSpeaking: false });
       }
     } else if (fallbackVoice && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
