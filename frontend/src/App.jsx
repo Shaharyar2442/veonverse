@@ -4,6 +4,7 @@ import ScenarioCard from "./components/ScenarioCard";
 import VectorStage from "./components/VectorStage";
 import BadgeDrawer from "./components/BadgeDrawer";
 import CompletionOverlay from "./components/CompletionOverlay";
+import LandingPage from "./components/LandingPage";
 import PrincipleBriefing from "./components/PrincipleBriefing";
 import { C_FACTOR_SCENARIOS } from "./data/cFactorScenarios";
 import { anamAvatar } from "./services/anamAvatar";
@@ -20,6 +21,7 @@ export default function App() {
   const [earnedBadges, setEarnedBadges] = useState(new Map());
   const [isBadgeDrawerOpen, setIsBadgeDrawerOpen] = useState(false);
   const [phase, setPhase] = useState("briefing");
+  const [hasStarted, setHasStarted] = useState(false);
 
   const currentScenario = C_FACTOR_SCENARIOS[currentStageIndex] || C_FACTOR_SCENARIOS[0];
 
@@ -155,7 +157,11 @@ export default function App() {
 
   return (
     <div className="cfactor-game-root font-sans">
-      <GameHUD
+      {!hasStarted ? (
+        <LandingPage onEnter={() => setHasStarted(true)} />
+      ) : (
+        <>
+          <GameHUD
         currentStage={currentStageIndex + 1}
         totalStages={C_FACTOR_SCENARIOS.length}
         isMuted={isMuted}
@@ -221,6 +227,8 @@ export default function App() {
         totalScore={totalScore}
         onClose={() => setIsBadgeDrawerOpen(false)}
       />
+        </>
+      )}
     </div>
   );
 }
