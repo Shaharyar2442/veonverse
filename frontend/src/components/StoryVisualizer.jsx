@@ -1,6 +1,25 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const NODES_PARTICLE_SEED = Array.from({ length: 150 }, (_, i) => {
+  const x1 = ((i * 37 + 13) % 800) - 400;
+  const y1 = ((i * 53 + 7) % 400) - 200;
+  const x2 = ((i * 73 + 29) % 800) - 400;
+  const y2 = ((i * 41 + 19) % 400) - 200;
+  const dur = 4 + ((i * 17) % 20) / 10;
+  return { x1, y1, x2, y2, dur, isWarning: i % 5 === 0 };
+});
+
+const NODES_PATH_SEED = Array.from({ length: 20 }, (_, i) => {
+  const sx = (i * 91 + 23) % 800;
+  const sy = (i * 67 + 17) % 400;
+  const c1x = (i * 43 + 31) % 800;
+  const c1y = (i * 127 + 11) % 400;
+  const ex = (i * 61 + 47) % 800;
+  const ey = (i * 83 + 13) % 400;
+  return { sx, sy, c1x, c1y, ex, ey };
+});
+
 export const StoryVisualizer = ({ visualConcept, dialogueStep = 0, selectedChoice }) => {
   const containerStyle = "absolute inset-0 flex items-center justify-center -translate-y-10 md:-translate-y-14 overflow-hidden pointer-events-none z-0";
   const isResolvedCorrect = selectedChoice && selectedChoice.stars === 3;
@@ -55,24 +74,24 @@ export const StoryVisualizer = ({ visualConcept, dialogueStep = 0, selectedChoic
                 exit={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }}
                 transition={{ duration: 0.5 }}
               >
-                {[...Array(150)].map((_, i) => (
+                {NODES_PARTICLE_SEED.map((p, i) => (
                   <motion.div
                     key={i}
                     animate={{
-                      x: [Math.random() * 800 - 400, Math.random() * 800 - 400],
-                      y: [Math.random() * 400 - 200, Math.random() * 400 - 200],
-                      opacity: showWarnings && i % 5 === 0 ? [1, 0, 1] : 0.4
+                      x: [p.x1, p.x2],
+                      y: [p.y1, p.y2],
+                      opacity: showWarnings && p.isWarning ? [1, 0, 1] : 0.4
                     }}
-                    transition={{ duration: 4 + Math.random() * 2, repeat: Infinity, ease: "linear" }}
-                    className={`absolute top-1/2 left-1/2 rounded-full ${showWarnings && i % 5 === 0 ? 'w-4 h-4 bg-[#ffca05]' : 'w-2 h-2 bg-[#54718f]'}`}
+                    transition={{ duration: p.dur, repeat: Infinity, ease: "linear" }}
+                    className={`absolute top-1/2 left-1/2 rounded-full ${showWarnings && p.isWarning ? 'w-4 h-4 bg-[#ffca05]' : 'w-2 h-2 bg-[#54718f]'}`}
                   />
                 ))}
                 {/* Tangled Lines */}
                 <svg className="absolute inset-0 w-full h-full opacity-30">
-                  {[...Array(20)].map((_, i) => (
+                  {NODES_PATH_SEED.map((p, i) => (
                     <motion.path
                       key={i}
-                      d={`M ${Math.random()*800} ${Math.random()*400} Q ${Math.random()*800} ${Math.random()*400}, ${Math.random()*800} ${Math.random()*400}`}
+                      d={`M ${p.sx} ${p.sy} Q ${p.c1x} ${p.c1y}, ${p.ex} ${p.ey}`}
                       fill="transparent"
                       stroke={showWarnings ? "#ffca05" : "#54718f"}
                       strokeWidth="1"

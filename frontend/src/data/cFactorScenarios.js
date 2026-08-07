@@ -9,6 +9,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Communication & Rapid Execution",
     locationTag: "Kyivstar & Jazz Ops Command Center",
     visualConcept: "nodes", // Represents chaotic nodes converging
+    teachingBrief: "Clarity is Our Superpower means cutting through complexity, noise, and competing priorities to identify the one thing that truly matters. As a VEON leader, your ability to synthesize chaos into a single, decisive directive determines whether the team executes with precision or drowns in analysis paralysis. The tension is always Simplification versus Comprehensiveness — and great leaders know when to simplify.",
     takeaways: [
       "Isolate the single metric that matters most during critical decisions.",
       "Eliminate administrative noise to enable rapid operational execution."
@@ -50,6 +51,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Driving Innovation & Smart Risk-Taking",
     locationTag: "Beeline Kazakhstan Innovation Lab",
     visualConcept: "orbit", // Represents breaking out of a standard orbit
+    teachingBrief: "Our Pioneering Spirit Defines Us means rejecting the gravitational pull of 'how it's always been done.' VEON was built by pioneers who questioned industry playbooks and built from first principles. This competency targets your ability to drive innovation and take smart, calculated risks — even when external validation is absent. The tension is Innovation versus sticking to Proven Best-Practices.",
     takeaways: [
       "Challenge legacy playbooks when raw customer needs demand novel architecture.",
       "Pioneers accept smart calculated risks rather than waiting for external consensus."
@@ -91,6 +93,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Driving for Results & High Standards",
     locationTag: "VEON HQ Executive Suite — Dubai",
     visualConcept: "pulse", // Represents a flatline turning into a dynamic heartbeat/pulse
+    teachingBrief: "We Fight Against Mediocrity is the refusal to accept 'good enough.' In any organization, steady-state execution feels safe and comfortable. But VEON leaders practice constructive dissatisfaction — they intentionally disrupt functional routines because they see the potential for world-class performance. The Hogan competencies targeted here are Driving for Results and Self-development. The forced choice is between Restlessness and Stability.",
     takeaways: [
       "Good enough is the enemy of world-class execution.",
       "Practice constructive dissatisfaction to push baseline goals into exponential growth."
@@ -132,6 +135,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Accountability & Speed of Execution",
     locationTag: "Banglalink Digital Studio — Dhaka",
     visualConcept: "blocks", // Represents shattering rigid blocks
+    teachingBrief: "We Put Results Above Rituals challenges the assumption that process equals progress. Bureaucratic committee approvals, 7-day sign-off cycles, and rigid governance create the illusion of control while destroying speed. This competency targets Accountability and Speed of Execution. The psychometric tension is Outcome-Driven Agility versus Protocol Compliance — and customers don't care about your internal rituals.",
     takeaways: [
       "Protocols exist to serve customer outcomes, not internal administrative habits.",
       "Eliminate empty committee rituals when speed and connectivity are at stake."
@@ -173,6 +177,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Talent Scouting & High-Drive Leadership",
     locationTag: "Jazz Digital Academy — Islamabad",
     visualConcept: "growth", // Represents a spark growing into a massive flame
+    teachingBrief: "We Hire for Potential and Drive means betting on raw hunger, learning agility, and intrinsic motivation over static resumes and pedigree. Technical skills can be coached — but the fire to build, the curiosity to learn, and the drive to overcome cannot. The Hogan competencies are Talent Scouting and Self-development. The forced choice: High Potential Drivers versus Safe Bets with Tested Experience.",
     takeaways: [
       "Technical skills can be coached; intrinsic hunger and potential cannot.",
       "Bet on self-taught drivers with high learning velocity over static pedigree."
@@ -214,6 +219,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Courageous Decision Making under Pressure",
     locationTag: "Kyivstar Crisis Command Center — Kyiv",
     visualConcept: "shield", // Represents a strong, transparent shield
+    teachingBrief: "Courage Fuels Our Leadership means practicing radical candor and intellectual honesty — even when it's socially or politically uncomfortable. True leaders challenge flawed assumptions, own mistakes publicly, and stand up for what is right. The Hogan competencies are Taking Smart Risks and Integrity. The psychometric tension: Brave Accountability versus Passive Consent.",
     takeaways: [
       "Radical transparency protects long-term brand equity over short-term comfort.",
       "Lead with brave ownership during high-pressure crises."
@@ -255,6 +261,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Driving Strategy & Overcoming Obstacles",
     locationTag: "Beeline Uzbekistan Tech Hub",
     visualConcept: "rocket", // Represents an exponential curve launching upward
+    teachingBrief: "We Aim for Audacious Impact means setting game-changing, exponential goals that reshape markets rather than settling for incremental, safe progress. VEON leaders don't target 5% improvements — they aim for moonshots that transform entire industries. The Hogan competencies: Driving Strategy and Overcoming Obstacles. The forced choice: Exponential Moonshots versus Incremental Security.",
     takeaways: [
       "Incremental targets result in ordinary outcomes.",
       "Champion moonshot strategic initiatives that re-architect the market."
@@ -296,6 +303,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Ethics, Integrity & Sustainable Value",
     locationTag: "VEON Global Governance Center — Amsterdam",
     visualConcept: "balance", // Represents perfectly balanced scales
+    teachingBrief: "We Incentivize with Integrity means uncompromising adherence to ethical boundaries. No commercial target, quarterly bonus, or market pressure is worth compromising the organization's long-term integrity. The Hogan competencies: Integrity and Accountability. The forced choice is stark: Value-Driven Boundaries versus Results at All Costs.",
     takeaways: [
       "Short-term commercial gain never justifies compromising ethical boundaries.",
       "Align incentive structures strictly with sustainable, long-term enterprise value."
@@ -337,6 +345,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Cross-Functional Collaboration & Unity",
     locationTag: "Jazz & Kyivstar Joint Engineering Cell",
     visualConcept: "merge", // Represents isolated nodes merging into a strong core
+    teachingBrief: "We Stand Strong Together means fostering an interdependent ecosystem over lone-wolf behaviors. True VEON leaders break down silos, eliminate duplication, and unite talent across OpCos under one shared mission. The Hogan competencies: Teamwork and Relationship Building. The tension: One-VEON Synergy versus Siloed Turf Wars.",
     takeaways: [
       "Break down OpCo silos to scale global technology platforms.",
       "Eliminate duplication by uniting talent under one shared organizational mission."
@@ -378,6 +387,7 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Resilience, Perseverance & Grit",
     locationTag: "Banglalink Disaster Recovery Command — Dhaka",
     visualConcept: "core", // Represents a core glowing brighter despite external pressure
+    teachingBrief: "We Never Give Up is the commitment to unyielding grit, emotional composure, and resilience when encountering major strategic roadblocks. VEON leaders don't retreat when conditions turn hostile — they adapt, rally their teams, and find a way forward. The Hogan competencies: Overcoming Obstacles and Handling Stress. The forced choice: Relentless Persistence versus Premature Surrender.",
     takeaways: [
       "In times of severe disruption, perseverance defines leadership.",
       "Maintain emotional composure and rally teams to overcome seemingly impossible roadblocks."

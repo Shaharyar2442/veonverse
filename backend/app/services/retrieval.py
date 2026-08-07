@@ -1,5 +1,5 @@
 import math
-from sqlalchemy import select
+from sqlalchemy import Float, select
 
 from app.database import SessionLocal, engine
 from app.models import LeadershipChunk
@@ -29,7 +29,7 @@ def retrieve_context(
 
     with SessionLocal() as db:
         if is_postgres:
-            distance_expr = LeadershipChunk.embedding.cosine_distance(query_embedding).label("distance")
+            distance_expr = LeadershipChunk.embedding.op("<=>", return_type=Float())(query_embedding).label("distance")
             query_stmt = select(
                 LeadershipChunk.id,
                 LeadershipChunk.chunk_text,
