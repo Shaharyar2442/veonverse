@@ -196,6 +196,7 @@ export default function App() {
               selectedChoice={selectedChoice}
               dialogueStep={dialogueStep}
               avatarState={avatarState}
+              hideVisualizer={phase === "briefing"}
             />
 
             {phase === "briefing" ? (
