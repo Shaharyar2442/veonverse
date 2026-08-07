@@ -1,4 +1,4 @@
-import { Check, Maximize2, Volume2, VolumeX } from "lucide-react";
+import { Award, Check, Maximize2, Volume2, VolumeX } from "lucide-react";
 
 export default function GameHUD({
   currentStage,
@@ -8,6 +8,9 @@ export default function GameHUD({
   stageName = "Principle Experience",
   onSelectStage,
   completedStages = new Set(),
+  totalScore = 0,
+  badgeCount = 0,
+  onOpenBadges,
 }) {
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -33,9 +36,17 @@ export default function GameHUD({
               Executive Mentor
             </span>
           </div>
-          <span className="text-xs text-slate-400 font-medium">
-            Principle {currentStage} of {totalStages}: <span className="font-semibold text-slate-200">{stageName}</span>
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400 font-medium">
+              Principle {currentStage} of {totalStages}: <span className="font-semibold text-slate-200">{stageName}</span>
+            </span>
+            {/* Accumulated Score */}
+            {totalScore > 0 && (
+              <span className="text-[10px] font-extrabold text-[#ffca05] bg-[#ffca05]/10 border border-[#ffca05]/25 px-2 py-0.5 rounded-full">
+                {totalScore} pts
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -70,6 +81,20 @@ export default function GameHUD({
 
       {/* Executive controls */}
       <div className="flex items-center gap-3">
+        {/* Achievements / Badges */}
+        <button
+          className="relative w-9 h-9 rounded-full bg-[#0b1827] border border-[#29435f] hover:border-[#ffca05] hover:bg-[#ffca05]/10 text-slate-300 flex items-center justify-center transition-all duration-200 cursor-pointer"
+          onClick={onOpenBadges}
+          title="View Achievements"
+        >
+          <Award size={16} className="text-[#ffca05]" />
+          {badgeCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 text-[10px] font-extrabold text-white flex items-center justify-center shadow-sm">
+              {badgeCount}
+            </span>
+          )}
+        </button>
+
         {/* Mute/Unmute Audio Control */}
         <button
           className="w-9 h-9 rounded-full bg-[#0b1827] border border-[#29435f] hover:border-[#ffca05] hover:bg-[#ffca05]/10 text-slate-300 flex items-center justify-center transition-all duration-200 cursor-pointer"

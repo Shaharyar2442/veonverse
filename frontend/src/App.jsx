@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import GameHUD from "./components/GameHUD";
 import ScenarioCard from "./components/ScenarioCard";
 import VectorStage from "./components/VectorStage";
+import BadgeDrawer from "./components/BadgeDrawer";
 import { C_FACTOR_SCENARIOS } from "./data/cFactorScenarios";
 import { anamAvatar } from "./services/anamAvatar";
 
@@ -13,6 +14,9 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [completedStages, setCompletedStages] = useState(new Set());
+  const [totalScore, setTotalScore] = useState(0);
+  const [earnedBadges, setEarnedBadges] = useState(new Map());
+  const [isBadgeDrawerOpen, setIsBadgeDrawerOpen] = useState(false);
 
   const currentScenario = C_FACTOR_SCENARIOS[currentStageIndex] || C_FACTOR_SCENARIOS[0];
 
@@ -55,6 +59,22 @@ export default function App() {
   }
 
   function handleNextStage() {
+    if (selectedChoice) {
+      setTotalScore((prev) => prev + selectedChoice.score);
+      setEarnedBadges((prev) => {
+        const next = new Map(prev);
+        if (!prev.has(currentStageIndex)) {
+          next.set(currentStageIndex, {
+            badge: selectedChoice.badge,
+            stars: selectedChoice.stars,
+            score: selectedChoice.score,
+            principleTitle: currentScenario.principleTitle,
+          });
+        }
+        return next;
+      });
+    }
+
     setCompletedStages((prev) => {
       const next = new Set(prev);
       next.add(currentStageIndex);
@@ -84,6 +104,9 @@ export default function App() {
   function handleRestartExperience() {
     setIsComplete(false);
     setCompletedStages(new Set());
+    setTotalScore(0);
+    setEarnedBadges(new Map());
+    setIsBadgeDrawerOpen(false);
     setSelectedChoice(null);
     setDialogueStep(0);
     setCurrentStageIndex(0);
@@ -119,6 +142,9 @@ export default function App() {
         stageName={currentScenario.stageName}
         onSelectStage={handleSelectStage}
         completedStages={completedStages}
+        totalScore={totalScore}
+        badgeCount={earnedBadges.size}
+        onOpenBadges={() => setIsBadgeDrawerOpen(true)}
       />
 
       <main className="game-stage-viewport">
@@ -165,6 +191,13 @@ export default function App() {
           </div>
         </>}
       </main>
+
+      <BadgeDrawer
+        isOpen={isBadgeDrawerOpen}
+        badges={earnedBadges}
+        totalScore={totalScore}
+        onClose={() => setIsBadgeDrawerOpen(false)}
+      />
     </div>
   );
 }
