@@ -4,6 +4,7 @@ import ScenarioCard from "./components/ScenarioCard";
 import VectorStage from "./components/VectorStage";
 import BadgeDrawer from "./components/BadgeDrawer";
 import CompletionOverlay from "./components/CompletionOverlay";
+import PrincipleBriefing from "./components/PrincipleBriefing";
 import { C_FACTOR_SCENARIOS } from "./data/cFactorScenarios";
 import { anamAvatar } from "./services/anamAvatar";
 
@@ -18,6 +19,7 @@ export default function App() {
   const [totalScore, setTotalScore] = useState(0);
   const [earnedBadges, setEarnedBadges] = useState(new Map());
   const [isBadgeDrawerOpen, setIsBadgeDrawerOpen] = useState(false);
+  const [phase, setPhase] = useState("briefing");
 
   const currentScenario = C_FACTOR_SCENARIOS[currentStageIndex] || C_FACTOR_SCENARIOS[0];
 
@@ -42,19 +44,30 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (selectedChoice) return;
+    setPhase("briefing");
+  }, [currentStageIndex]);
+
+  useEffect(() => {
+    if (phase !== "dialogue" || selectedChoice) return;
     if (!isMuted && currentScenario?.dialogue) {
       const textToSpeak = currentScenario.dialogue[dialogueStep];
       if (textToSpeak) {
         anamAvatar.speak(textToSpeak);
       }
     }
-  }, [currentStageIndex, dialogueStep, isMuted]);
+  }, [currentStageIndex, phase, dialogueStep, isMuted]);
 
   function handleAdvanceDialogue() {
     if (dialogueStep < currentScenario.dialogue.length - 1) {
       setDialogueStep((prev) => prev + 1);
     }
+  }
+
+  function handleBeginChallenge() {
+    anamAvatar.stop();
+    setPhase("dialogue");
+    setDialogueStep(0);
+    setSelectedChoice(null);
   }
 
   function handleOptionSelect(choice) {
@@ -100,10 +113,12 @@ export default function App() {
 
   function handleSelectStage(index) {
     if (index >= 0 && index < C_FACTOR_SCENARIOS.length) {
+      anamAvatar.stop();
       setSelectedChoice(null);
       setDialogueStep(0);
       setCurrentStageIndex(index);
       setIsComplete(false);
+      setPhase("briefing");
     }
   }
 
@@ -177,18 +192,25 @@ export default function App() {
               avatarState={avatarState}
             />
 
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-4xl z-50">
-              <ScenarioCard
+            {phase === "briefing" ? (
+              <PrincipleBriefing
                 scenario={currentScenario}
-                dialogueStep={dialogueStep}
-                onAdvanceDialogue={handleAdvanceDialogue}
-                onOptionSelect={handleOptionSelect}
-                selectedChoice={selectedChoice}
-                onNextStage={handleNextStage}
-                isSpeaking={isSpeaking}
-                isFinalStage={currentStageIndex === C_FACTOR_SCENARIOS.length - 1}
+                onBegin={handleBeginChallenge}
               />
-            </div>
+            ) : (
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-4xl z-50">
+                <ScenarioCard
+                  scenario={currentScenario}
+                  dialogueStep={dialogueStep}
+                  onAdvanceDialogue={handleAdvanceDialogue}
+                  onOptionSelect={handleOptionSelect}
+                  selectedChoice={selectedChoice}
+                  onNextStage={handleNextStage}
+                  isSpeaking={isSpeaking}
+                  isFinalStage={currentStageIndex === C_FACTOR_SCENARIOS.length - 1}
+                />
+              </div>
+            )}
           </>
         )}
       </main>
