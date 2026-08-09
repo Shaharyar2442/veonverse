@@ -1,6 +1,6 @@
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Award, CheckCircle2, Lightbulb, Shield, Star, Target } from "lucide-react";
+import { ArrowRight, Award, CheckCircle2, Lightbulb, Shield, Star } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 export default function ResultPanel({ choice, scenario, onNextStage, isFinalStage }) {
@@ -62,7 +62,7 @@ export default function ResultPanel({ choice, scenario, onNextStage, isFinalStag
               })}
             </div>
             <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-extrabold tracking-wide ${scoreColor}`}>
-              <Target size={13} />
+              <Award size={13} />
               Score: {choice.score}
             </div>
           </motion.div>
@@ -85,26 +85,19 @@ export default function ResultPanel({ choice, scenario, onNextStage, isFinalStag
             </div>
           </motion.div>
 
-          {/* Psychometric Tension + Hogan Target — compact 2-col */}
+          {/* Psychometric Tension */}
           <motion.div
-            className="grid grid-cols-2 gap-2 max-w-lg mx-auto"
+            className="flex justify-center"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="bg-[#07121f]/80 border border-[#1c3148] rounded-lg px-3 py-2">
+            <div className="bg-[#07121f]/80 border border-[#1c3148] rounded-lg px-4 py-2.5">
               <div className="flex items-center gap-1 mb-1">
                 <Shield size={11} className="text-[#ffca05]" />
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">C-Factor</span>
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Psychometric Tension</span>
               </div>
-              <p className="text-[11px] font-semibold text-slate-200 leading-tight">{scenario.psychometricTension}</p>
-            </div>
-            <div className="bg-[#07121f]/80 border border-[#1c3148] rounded-lg px-3 py-2">
-              <div className="flex items-center gap-1 mb-1">
-                <Target size={11} className="text-[#ffca05]" />
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Hogan</span>
-              </div>
-              <p className="text-[11px] font-semibold text-slate-200 leading-tight">{scenario.hoganTarget}</p>
+              <p className="text-[11px] font-semibold text-slate-200 leading-tight text-center">{scenario.psychometricTension}</p>
             </div>
           </motion.div>
 

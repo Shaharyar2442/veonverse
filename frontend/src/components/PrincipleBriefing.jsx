@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Shield, Target } from "lucide-react";
+import { ArrowRight, Shield } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { anamAvatar } from "../services/anamAvatar";
 
@@ -226,18 +226,18 @@ export default function PrincipleBriefing({ scenario, onBegin }) {
               </motion.div>
 
               <motion.div
-                className="grid grid-cols-2 gap-3"
+                className="flex justify-center"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <div className="bg-[#030b16]/80 border border-[#1c3148] rounded-xl p-3">
+                <div className="bg-[#030b16]/80 border border-[#1c3148] rounded-xl p-3 w-full max-w-md">
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <Shield size={13} className="text-[#ffca05]" />
                     <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">The Tension</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-extrabold text-[#ffca05]">{scenario.leftForce}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[12px] font-extrabold text-[#ffca05]">{scenario.leftForce}</span>
                     <motion.div
                       className="h-px flex-1 bg-[#1c3148]"
                       initial={{ scaleX: 0 }}
@@ -245,15 +245,8 @@ export default function PrincipleBriefing({ scenario, onBegin }) {
                       transition={{ delay: 0.5, duration: 0.5 }}
                       style={{ transformOrigin: "left" }}
                     />
-                    <span className="text-[11px] font-extrabold text-slate-400">{scenario.rightForce}</span>
+                    <span className="text-[12px] font-extrabold text-slate-400">{scenario.rightForce}</span>
                   </div>
-                </div>
-                <div className="bg-[#030b16]/80 border border-[#1c3148] rounded-xl p-3">
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <Target size={13} className="text-[#ffca05]" />
-                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Hogan Target</span>
-                  </div>
-                  <p className="text-[11px] font-extrabold text-slate-200">{scenario.hoganTarget}</p>
                 </div>
               </motion.div>
             </div>
