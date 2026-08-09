@@ -6,6 +6,9 @@ os.environ["USE_TORCH"] = "1"
 os.environ["USE_TF"] = "0"
 
 from dotenv import load_dotenv
+
+load_dotenv()
+
 from sqlalchemy import delete, func, select
 
 from app.database import SessionLocal, engine
