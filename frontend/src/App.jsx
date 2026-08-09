@@ -103,15 +103,22 @@ export default function App() {
       return next;
     });
 
-    if (currentStageIndex === C_FACTOR_SCENARIOS.length - 1) {
+    const allDone = completedStages.size + 1 === C_FACTOR_SCENARIOS.length;
+
+    if (allDone) {
       setIsComplete(true);
       return;
     }
 
+    const nextIncomplete = Array.from(
+      { length: C_FACTOR_SCENARIOS.length },
+      (_, i) => i
+    ).find((i) => i !== currentStageIndex && !completedStages.has(i));
+
     setSelectedChoice(null);
     setDialogueStep(0);
     setPhase("briefing");
-    setCurrentStageIndex((prev) => prev + 1);
+    setCurrentStageIndex(nextIncomplete ?? currentStageIndex + 1);
   }
 
   function handleSelectStage(index) {
@@ -233,7 +240,7 @@ export default function App() {
                   selectedChoice={selectedChoice}
                   onNextStage={handleNextStage}
                   isSpeaking={isSpeaking}
-                  isFinalStage={currentStageIndex === C_FACTOR_SCENARIOS.length - 1}
+                  isFinalStage={completedStages.size === C_FACTOR_SCENARIOS.length - 1}
                 />
               </div>
             )}
