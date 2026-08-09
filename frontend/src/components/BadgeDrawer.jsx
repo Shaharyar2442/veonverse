@@ -11,9 +11,16 @@ function getCirclePosition(index) {
   const angle = (360 / TOTAL) * index - 90;
   const rad = (angle * Math.PI) / 180;
   return {
-    left: `${CENTER_X + Math.cos(rad) * (RADIUS / 4)}%`,
-    top: `${CENTER_Y + Math.sin(rad) * (RADIUS / 3.5)}%`,
+    left: `${CENTER_X + Math.cos(rad) * (RADIUS / 3)}%`,
+    top: `${CENTER_Y + Math.sin(rad) * (RADIUS / 2.6)}%`,
   };
+}
+
+function shortTitle(title) {
+  return title
+    .replace("We ", "")
+    .replace("Our ", "")
+    .substring(0, 22);
 }
 
 export default function BadgeDrawer({ isOpen, badges, totalScore = 0, onClose }) {
@@ -21,7 +28,8 @@ export default function BadgeDrawer({ isOpen, badges, totalScore = 0, onClose })
     const earned = badges.get(idx);
     return {
       id: s.stageId,
-      title: s.principleTitle,
+      title: shortTitle(s.principleTitle),
+      fullTitle: s.principleTitle,
       earned: !!earned,
       stars: earned ? earned.stars : 0,
       badge: earned ? earned.badge : null,
@@ -75,84 +83,78 @@ export default function BadgeDrawer({ isOpen, badges, totalScore = 0, onClose })
               </button>
             </div>
 
-            {/* Badge Circle */}
-            <div className="relative w-full aspect-square max-w-[360px] mx-auto my-4">
-              {allPrinciples.map((principle, idx) => {
-                const pos = getCirclePosition(idx);
-                const isGold = principle.stars === 3;
-                const isSilver = principle.earned && principle.stars < 3;
-                const isUnearned = !principle.earned;
-
-                return (
-                  <motion.div
-                    key={principle.id}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1"
-                    style={{ left: pos.left, top: pos.top }}
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: idx * 0.06, type: "spring", stiffness: 200 }}
-                    title={principle.earned ? `${principle.badge} — ${principle.score} pts` : principle.title}
-                  >
-                    {/* Badge circle */}
-                    <motion.div
-                      className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
-                        isGold
-                          ? "bg-[#ffca05]/20 border-2 border-[#ffca05] shadow-[0_0_20px_rgba(255,202,5,0.3)]"
-                          : isSilver
-                          ? "bg-slate-300/10 border-2 border-slate-400 shadow-[0_0_12px_rgba(148,163,184,0.15)]"
-                          : "bg-[#0b1827]/80 border-2 border-[#1c3148]"
-                      }`}
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      {isGold ? (
-                        <Star size={22} className="text-[#ffca05]" fill="#ffca05" />
-                      ) : isSilver ? (
-                        <Star size={22} className="text-slate-400" fill="currentColor" />
-                      ) : (
-                        <span className="text-xs font-extrabold text-slate-600">{principle.id}</span>
-                      )}
-                    </motion.div>
-
-                    {/* Status line */}
-                    {isGold && (
-                      <CheckCircle2 size={12} className="text-[#ffca05]" />
-                    )}
-                    {isSilver && (
-                      <CheckCircle2 size={12} className="text-slate-400" />
-                    )}
-
-                    {/* Principle name (tiny) */}
-                    <span className={`text-[8px] font-bold uppercase tracking-wider text-center leading-tight max-w-[80px] ${
-                      isGold ? "text-[#ffca05]" : isSilver ? "text-slate-400" : "text-slate-700"
-                    }`}>
-                      {principle.title}
-                    </span>
-                  </motion.div>
-                );
-              })}
-
-              {/* Center hub */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <div className="w-16 h-16 rounded-full bg-[#07121f] border-2 border-[#1c3148] flex flex-col items-center justify-center shadow-lg">
-                  <Zap size={18} className="text-[#ffca05]" />
-                  <span className="text-lg font-black text-white leading-none tabular-nums">{totalScore}</span>
+            {/* Badge Circle + Key */}
+            <div className="relative w-full max-w-[440px] mx-auto my-4 px-8" style={{ height: "min(65vw, 380px)" }}>
+              {/* Key — left side */}
+              <div className="absolute -left-18 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#ffca05]/20 border border-[#ffca05] shrink-0" />
+                  <span className="text-[8px] text-slate-500 font-semibold hidden md:inline">Mastered</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-slate-300/10 border border-slate-400 shrink-0" />
+                  <span className="text-[8px] text-slate-500 font-semibold hidden md:inline">Completed</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#0b1827] border border-[#1c3148] shrink-0" />
+                  <span className="text-[8px] text-slate-500 font-semibold hidden md:inline">Locked</span>
                 </div>
               </div>
-            </div>
 
-            {/* Key */}
-            <div className="flex items-center justify-center gap-6 pb-6">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-[#ffca05]/20 border border-[#ffca05]" />
-                <span className="text-[10px] text-slate-500 font-medium">Mastered</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-slate-300/10 border border-slate-400" />
-                <span className="text-[10px] text-slate-500 font-medium">Completed</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-[#0b1827] border border-[#1c3148]" />
-                <span className="text-[10px] text-slate-500 font-medium">Locked</span>
+              {/* Circle */}
+              <div className="relative w-full h-full">
+                {allPrinciples.map((principle, idx) => {
+                  const pos = getCirclePosition(idx);
+                  const isGold = principle.stars === 3;
+                  const isSilver = principle.earned && principle.stars < 3;
+                  const isUnearned = !principle.earned;
+
+                  return (
+                    <motion.div
+                      key={principle.id}
+                      className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5"
+                      style={{ left: pos.left, top: pos.top }}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.06, type: "spring", stiffness: 200 }}
+                      title={principle.fullTitle}
+                    >
+                      <motion.div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${isGold
+                          ? "bg-[#ffca05]/20 border-2 border-[#ffca05] shadow-[0_0_15px_rgba(255,202,5,0.25)]"
+                          : isSilver
+                            ? "bg-slate-300/10 border-2 border-slate-400 shadow-[0_0_10px_rgba(148,163,184,0.12)]"
+                            : "bg-[#0b1827]/80 border-2 border-[#1c3148]"
+                          }`}
+                        whileHover={{ scale: 1.12 }}
+                      >
+                        {isGold ? (
+                          <Star size={15} className="text-[#ffca05]" fill="#ffca05" />
+                        ) : isSilver ? (
+                          <Star size={15} className="text-slate-400" fill="currentColor" />
+                        ) : (
+                          <span className="text-[10px] font-extrabold text-slate-600">{principle.id}</span>
+                        )}
+                      </motion.div>
+
+                      {isGold && <CheckCircle2 size={10} className="text-[#ffca05]" />}
+                      {isSilver && <CheckCircle2 size={10} className="text-slate-400" />}
+
+                      <span className={`text-[7px] font-bold uppercase tracking-tight text-center leading-tight max-w-[48px] ${isGold ? "text-[#ffca05]" : isSilver ? "text-slate-400" : "text-slate-700"
+                        }`}>
+                        {principle.title}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+
+                {/* Center hub */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <div className="w-14 h-14 rounded-full bg-[#07121f] border-2 border-[#1c3148] flex flex-col items-center justify-center shadow-lg">
+                    <Zap size={16} className="text-[#ffca05]" />
+                    <span className="text-base font-black text-white leading-none tabular-nums">{totalScore}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>

@@ -32,9 +32,6 @@ export default function GameHUD({
             <span className="text-base font-extrabold tracking-tight text-slate-100">
               VEON<span className="text-[#ffca05]">VERSE</span>
             </span>
-            <span className="text-[10px] bg-[#ffca05]/10 text-[#ffca05] font-bold px-2 py-0.5 rounded border border-[#ffca05]/35 uppercase tracking-wider">
-              Executive Mentor
-            </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-400 font-medium">
@@ -63,10 +60,10 @@ export default function GameHUD({
               key={stageNum}
               onClick={() => onSelectStage && onSelectStage(idx)}
               className={`w-7 h-7 rounded-full text-xs font-extrabold flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                isActive
-                  ? "bg-[#ffca05] text-[#03101f] shadow-md shadow-amber-400/20 scale-110"
-                  : isCompleted
+                isCompleted
                   ? "bg-emerald-600/80 text-white hover:bg-emerald-500 shadow-sm shadow-emerald-500/20"
+                  : isActive
+                  ? "bg-[#ffca05] text-[#03101f] shadow-md shadow-amber-400/20 scale-110"
                   : isPassed
                   ? "bg-[#17273a] text-[#ffca05] hover:bg-[#203752]"
                   : "bg-[#0b1827] text-slate-400 hover:bg-[#17273a] border border-[#29435f]"
