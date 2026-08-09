@@ -1,6 +1,6 @@
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
-import { Award, RotateCcw, Sparkles, Star, Zap } from "lucide-react";
+import { Award, Home as HomeIcon, RotateCcw, Sparkles, Star, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { anamAvatar } from "../services/anamAvatar";
 
@@ -17,7 +17,7 @@ const STAR_POSITIONS = [
   { top: "80%", left: "78%" },
 ];
 
-export default function CompletionOverlay({ totalScore, correctCount, totalStages, earnedBadges, onRestart }) {
+export default function CompletionOverlay({ totalScore, correctCount, totalStages, earnedBadges, onRestart, onReturnHome }) {
   const isPerfect = correctCount === totalStages;
   const [displayScore, setDisplayScore] = useState(0);
   const [showContent, setShowContent] = useState(false);
@@ -227,18 +227,29 @@ export default function CompletionOverlay({ totalScore, correctCount, totalStage
         </motion.div>
       )}
 
-      {/* Restart */}
+      {/* Actions */}
       {showContent && (
-        <motion.button
-          className="mt-8 rounded-full bg-[#ffca05] hover:bg-[#ffd84d] text-[#03101f] font-extrabold px-8 py-3 text-xs uppercase tracking-wider shadow-lg hover:shadow-xl hover:shadow-amber-400/20 transition-all cursor-pointer flex items-center gap-2"
+        <motion.div
+          className="mt-8 flex flex-wrap items-center justify-center gap-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          onClick={onRestart}
         >
-          <RotateCcw size={16} />
-          Start again
-        </motion.button>
+          <button
+            className="rounded-full bg-[#ffca05] hover:bg-[#ffd84d] text-[#03101f] font-extrabold px-8 py-3 text-xs uppercase tracking-wider shadow-lg hover:shadow-xl hover:shadow-amber-400/20 transition-all cursor-pointer flex items-center gap-2"
+            onClick={onReturnHome}
+          >
+            <HomeIcon size={16} />
+            Return to Home
+          </button>
+          <button
+            className="rounded-full border border-[#29435f] hover:border-[#ffca05] hover:bg-[#ffca05]/10 text-slate-200 hover:text-[#ffca05] font-extrabold px-8 py-3 text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2"
+            onClick={onRestart}
+          >
+            <RotateCcw size={16} />
+            Start again
+          </button>
+        </motion.div>
       )}
     </section>
   );

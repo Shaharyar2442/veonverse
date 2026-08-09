@@ -1,4 +1,4 @@
-import { Award, Check, Maximize2, Volume2, VolumeX } from "lucide-react";
+import { Award, Check, Home, Maximize2, Volume2, VolumeX } from "lucide-react";
 
 export default function GameHUD({
   currentStage,
@@ -11,6 +11,7 @@ export default function GameHUD({
   totalScore = 0,
   badgeCount = 0,
   onOpenBadges,
+  onReturnHome,
 }) {
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -78,6 +79,15 @@ export default function GameHUD({
 
       {/* Executive controls */}
       <div className="flex items-center gap-3">
+        {/* Back to the VEONVERSE hub */}
+        <button
+          className="w-9 h-9 rounded-full bg-[#0b1827] border border-[#29435f] hover:border-[#ffca05] hover:bg-[#ffca05]/10 text-slate-300 flex items-center justify-center transition-all duration-200 cursor-pointer"
+          onClick={onReturnHome}
+          title="Return to Home"
+        >
+          <Home size={16} className="text-[#ffca05]" />
+        </button>
+
         {/* Achievements / Badges */}
         <button
           className="relative w-9 h-9 rounded-full bg-[#0b1827] border border-[#29435f] hover:border-[#ffca05] hover:bg-[#ffca05]/10 text-slate-300 flex items-center justify-center transition-all duration-200 cursor-pointer"

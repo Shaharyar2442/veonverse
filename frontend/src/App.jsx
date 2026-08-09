@@ -6,6 +6,7 @@ import BadgeDrawer from "./components/BadgeDrawer";
 import CompletionOverlay from "./components/CompletionOverlay";
 import LandingPage from "./components/LandingPage";
 import PrincipleBriefing from "./components/PrincipleBriefing";
+import HomePage from "./components/HomePage";
 import { C_FACTOR_SCENARIOS } from "./data/cFactorScenarios";
 import { anamAvatar } from "./services/anamAvatar";
 
@@ -22,6 +23,8 @@ export default function App() {
   const [isBadgeDrawerOpen, setIsBadgeDrawerOpen] = useState(false);
   const [phase, setPhase] = useState("briefing");
   const [hasStarted, setHasStarted] = useState(false);
+  // "experience" = the 10-principle journey, "home" = the VEONVERSE hub page.
+  const [view, setView] = useState("experience");
 
   const currentScenario = C_FACTOR_SCENARIOS[currentStageIndex] || C_FACTOR_SCENARIOS[0];
 
@@ -134,6 +137,20 @@ export default function App() {
     setCurrentStageIndex(0);
   }
 
+  function handleReturnHome() {
+    anamAvatar.stop();
+    setIsBadgeDrawerOpen(false);
+    setView("home");
+  }
+
+  // Entering the principles experience from the hub always starts a fresh run.
+  function handleHomeNavigate(destination) {
+    if (destination !== "principles") return;
+    handleRestartExperience();
+    setHasStarted(true);
+    setView("experience");
+  }
+
   function handleReplayAudio() {
     const textToSpeak = selectedChoice
       ? selectedChoice.feedback
@@ -154,6 +171,11 @@ export default function App() {
     }
   }
 
+  // The hub page scrolls, so it renders outside .cfactor-game-root (100vh, clipped).
+  if (view === "home") {
+    return <HomePage onNavigate={handleHomeNavigate} />;
+  }
+
   return (
     <div className="cfactor-game-root font-sans">
       {!hasStarted ? (
@@ -171,6 +193,7 @@ export default function App() {
         totalScore={totalScore}
         badgeCount={earnedBadges.size}
         onOpenBadges={() => setIsBadgeDrawerOpen(true)}
+        onReturnHome={handleReturnHome}
       />
 
       <main className="game-stage-viewport">
@@ -181,6 +204,7 @@ export default function App() {
             totalStages={C_FACTOR_SCENARIOS.length}
             earnedBadges={earnedBadges}
             onRestart={handleRestartExperience}
+            onReturnHome={handleReturnHome}
           />
         ) : (
           <>
