@@ -9,7 +9,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Communication & Rapid Execution",
     locationTag: "Kyivstar & Jazz Ops Command Center",
     visualConcept: "nodes", // Represents chaotic nodes converging
-    teachingBrief: "Clarity is Our Superpower means cutting through complexity, noise, and competing priorities to identify the one thing that truly matters. As a VEON leader, your ability to synthesize chaos into a single, decisive directive determines whether the team executes with precision or drowns in analysis paralysis. The tension is always Simplification versus Comprehensiveness — and great leaders know when to simplify.",
+    teachingBrief: "The pursuit of creating a better life for all begins with a deep understanding of people, communities, and the drivers of their potential. VEON is proud to have the ability to cut through the noise and focus on what truly matters. By listening with the intent of absorbing and delivering value, we believe in being deeply in tune with the rhythm of our stakeholders and truly creating meaningful impact. This clarity helps us avoid chasing every new trend and instead focus our energy on doing the right things, and doing them well.",
+    behaviourStatement: "Clarity is our superpower means listening first, simplifying complexity, and focusing our effort on what truly matters.",
     takeaways: [
       "Isolate the single metric that matters most during critical decisions.",
       "Eliminate administrative noise to enable rapid operational execution."
@@ -51,7 +52,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Driving Innovation & Smart Risk-Taking",
     locationTag: "Beeline Kazakhstan Innovation Lab",
     visualConcept: "orbit", // Represents breaking out of a standard orbit
-    teachingBrief: "Our Pioneering Spirit Defines Us means rejecting the gravitational pull of 'how it's always been done.' VEON was built by pioneers who questioned industry playbooks and built from first principles. This competency targets your ability to drive innovation and take smart, calculated risks — even when external validation is absent. The tension is Innovation versus sticking to Proven Best-Practices.",
+    teachingBrief: "Having a pioneering spirit means having the courage to innovate and find better ways of doing things. Progress does not come from standing still or waiting for certainty. It comes from curiosity and the willingness to move forward, even when the path is unclear. At VEON, we do not hold back simply because something has not been done before. We question the status quo, explore new possibilities, and continuously improve how we work to create stronger value and lasting impact. Our approach to pioneering is grounded in curiosity and purpose, not ego or risk for the sake of it.",
+    behaviourStatement: "Our pioneering spirit defines us as having the courage to innovate and continuously find better ways of doing things.",
     takeaways: [
       "Challenge legacy playbooks when raw customer needs demand novel architecture.",
       "Pioneers accept smart calculated risks rather than waiting for external consensus."
@@ -93,7 +95,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Driving for Results & High Standards",
     locationTag: "VEON HQ Executive Suite — Dubai",
     visualConcept: "pulse", // Represents a flatline turning into a dynamic heartbeat/pulse
-    teachingBrief: "We Fight Against Mediocrity is the refusal to accept 'good enough.' In any organization, steady-state execution feels safe and comfortable. But VEON leaders practice constructive dissatisfaction — they intentionally disrupt functional routines because they see the potential for world-class performance. The Hogan competencies targeted here are Driving for Results and Self-development. The forced choice is between Restlessness and Stability.",
+    teachingBrief: "Mediocrity rarely shows up as failure. More often, it appears as comfort, doing just enough, choosing what feels safe, or relying on familiar ways of working. Over time, this quiet slide into average is more dangerous than the daily effort it takes to aim higher. At VEON, we believe standing still is not an option. Without continuous improvement, any organization drifts toward irrelevance. That is why we challenge comfort, stay willing to be uncomfortable, and keep ambition alive in everything we do.",
+    behaviourStatement: "We fight against mediocrity by refusing to settle for average and by continuously pushing ourselves to do better, every day.",
     takeaways: [
       "Good enough is the enemy of world-class execution.",
       "Practice constructive dissatisfaction to push baseline goals into exponential growth."
@@ -135,7 +138,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Accountability & Speed of Execution",
     locationTag: "Banglalink Digital Studio — Dhaka",
     visualConcept: "blocks", // Represents shattering rigid blocks
-    teachingBrief: "We Put Results Above Rituals challenges the assumption that process equals progress. Bureaucratic committee approvals, 7-day sign-off cycles, and rigid governance create the illusion of control while destroying speed. This competency targets Accountability and Speed of Execution. The psychometric tension is Outcome-Driven Agility versus Protocol Compliance — and customers don't care about your internal rituals.",
+    teachingBrief: "Choosing results over rituals is choosing ambition over comfort. Rituals feel safe and familiar, often giving the illusion of progress without real outcomes. Results are harder and more uncomfortable because they force us to confront whether our work is truly making a difference. At VEON, we know motion is not the same as momentum. If a process does not lead to meaningful results, it must be questioned or removed. Holding on to rituals slows us down, and before we even know it, we've settled for being average. We choose achievement over activity and focus on work that genuinely moves us forward.",
+    behaviourStatement: "We put results above rituals by focusing on outcomes that matter and letting go of processes that do not drive impact.",
     takeaways: [
       "Protocols exist to serve customer outcomes, not internal administrative habits.",
       "Eliminate empty committee rituals when speed and connectivity are at stake."
@@ -177,7 +181,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Talent Scouting & High-Drive Leadership",
     locationTag: "Jazz Digital Academy — Islamabad",
     visualConcept: "growth", // Represents a spark growing into a massive flame
-    teachingBrief: "We Hire for Potential and Drive means betting on raw hunger, learning agility, and intrinsic motivation over static resumes and pedigree. Technical skills can be coached — but the fire to build, the curiosity to learn, and the drive to overcome cannot. The Hogan competencies are Talent Scouting and Self-development. The forced choice: High Potential Drivers versus Safe Bets with Tested Experience.",
+    teachingBrief: "At VEON, we believe our ambitions demand a different way of hiring and developing talent. Big goals require people who are ready to grow into them. That is why we look beyond experience alone and focus on potential and drive. Hiring for potential means believing in growth and trajectory, not just past roles. Drive is what brings that potential to life. It is the inner engine that keeps people moving forward through uncertainty, complexity, and change. We seek teammates who are curious, who challenge familiar ways of working, and who constantly look for better solutions. This mindset helps us avoid complacency and continue raising the bar. Diversity of perspectives, backgrounds, and thinking strengthens our teams and sharpens our decisions, making it a true competitive advantage.",
+    behaviourStatement: "We hire for potential and drive by investing in people who are ready to grow, challenge the ordinary, and go further than expected.",
     takeaways: [
       "Technical skills can be coached; intrinsic hunger and potential cannot.",
       "Bet on self-taught drivers with high learning velocity over static pedigree."
@@ -219,7 +224,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Courageous Decision Making under Pressure",
     locationTag: "Kyivstar Crisis Command Center — Kyiv",
     visualConcept: "shield", // Represents a strong, transparent shield
-    teachingBrief: "Courage Fuels Our Leadership means practicing radical candor and intellectual honesty — even when it's socially or politically uncomfortable. True leaders challenge flawed assumptions, own mistakes publicly, and stand up for what is right. The Hogan competencies are Taking Smart Risks and Integrity. The psychometric tension: Brave Accountability versus Passive Consent.",
+    teachingBrief: "Courage is called fuel for a reason. Without it, the engine of leadership does not run. In an organization that aims to pioneer, challenge norms, and create real impact, leadership stalls without the courage to move forward when the path is uncertain. At VEON, courage is what enables leaders to do difficult things, not just familiar ones. It shows up in speaking the truth with honesty and respect, even when it is uncomfortable. It also shows up in the willingness to admit when we are wrong. Audacious ambition requires experimentation, and experimentation brings mistakes. Courageous leaders own those moments, learn quickly, and pivot with intent rather than hide behind certainty.",
+    behaviourStatement: "Courage fuels our leadership by enabling us to take risks, speak the truth, and lead decisively, even in the face of uncertainty.",
     takeaways: [
       "Radical transparency protects long-term brand equity over short-term comfort.",
       "Lead with brave ownership during high-pressure crises."
@@ -261,7 +267,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Driving Strategy & Overcoming Obstacles",
     locationTag: "Beeline Uzbekistan Tech Hub",
     visualConcept: "rocket", // Represents an exponential curve launching upward
-    teachingBrief: "We Aim for Audacious Impact means setting game-changing, exponential goals that reshape markets rather than settling for incremental, safe progress. VEON leaders don't target 5% improvements — they aim for moonshots that transform entire industries. The Hogan competencies: Driving Strategy and Overcoming Obstacles. The forced choice: Exponential Moonshots versus Incremental Security.",
+    teachingBrief: "Audacious impact is about being bold enough to aim higher than what feels comfortable. Audacious means daring, ambitious, and willing to challenge limits. It requires letting go of the need for certainty and accepting that meaningful progress often comes with risk. At VEON, we believe real impact comes from thinking bigger, acting with intent, and building solutions that can scale and endure. When we resist the pull of average outcomes and refuse to settle for what is easy, we create the momentum needed to drive transformation. For us, impact is not measured only in numbers, but in how deeply it runs, how many lives it reaches, and how lasting the change truly is.",
+    behaviourStatement: "We aim for audacious impact by thinking bigger, acting boldly, and creating change that runs deep, scales wide, and lasts.",
     takeaways: [
       "Incremental targets result in ordinary outcomes.",
       "Champion moonshot strategic initiatives that re-architect the market."
@@ -303,7 +310,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Ethics, Integrity & Sustainable Value",
     locationTag: "VEON Global Governance Center — Amsterdam",
     visualConcept: "balance", // Represents perfectly balanced scales
-    teachingBrief: "We Incentivize with Integrity means uncompromising adherence to ethical boundaries. No commercial target, quarterly bonus, or market pressure is worth compromising the organization's long-term integrity. The Hogan competencies: Integrity and Accountability. The forced choice is stark: Value-Driven Boundaries versus Results at All Costs.",
+    teachingBrief: "At VEON, how results are achieved matters as much as the results themselves. Our ambitions are guided by integrity, especially when pressure is high. We reward performance that delivers impact without compromising ethics, fairness, or accountability. Success is not just about what we achieve, but how we achieve it, because long term performance is built on trust and doing the right thing.",
+    behaviourStatement: "We incentivize with integrity by rewarding outcomes achieved the right way and holding ourselves accountable to ethical choices every day.",
     takeaways: [
       "Short-term commercial gain never justifies compromising ethical boundaries.",
       "Align incentive structures strictly with sustainable, long-term enterprise value."
@@ -345,7 +353,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Cross-Functional Collaboration & Unity",
     locationTag: "Jazz & Kyivstar Joint Engineering Cell",
     visualConcept: "merge", // Represents isolated nodes merging into a strong core
-    teachingBrief: "We Stand Strong Together means fostering an interdependent ecosystem over lone-wolf behaviors. True VEON leaders break down silos, eliminate duplication, and unite talent across OpCos under one shared mission. The Hogan competencies: Teamwork and Relationship Building. The tension: One-VEON Synergy versus Siloed Turf Wars.",
+    teachingBrief: "Standing strong means standing together. Our strength comes from unity. At VEON, we build bridges across teams, perspectives, and differences, because collaboration is what allows us to move faster and go further. When we lift each other up and align around a common purpose, we create an environment where trust grows, collaboration thrives, and everyone is able to go further.",
+    behaviourStatement: "We stand strong together by supporting one another, building bridges across differences, and uniting around a shared purpose.",
     takeaways: [
       "Break down OpCo silos to scale global technology platforms.",
       "Eliminate duplication by uniting talent under one shared organizational mission."
@@ -387,7 +396,8 @@ export const C_FACTOR_SCENARIOS = [
     hoganTarget: "Resilience, Perseverance & Grit",
     locationTag: "Banglalink Disaster Recovery Command — Dhaka",
     visualConcept: "core", // Represents a core glowing brighter despite external pressure
-    teachingBrief: "We Never Give Up is the commitment to unyielding grit, emotional composure, and resilience when encountering major strategic roadblocks. VEON leaders don't retreat when conditions turn hostile — they adapt, rally their teams, and find a way forward. The Hogan competencies: Overcoming Obstacles and Handling Stress. The forced choice: Relentless Persistence versus Premature Surrender.",
+    teachingBrief: "Never giving up may sound simple, but it is the foundation that holds everything else together. The journey we have chosen is demanding. We fight complacency, aim for audacious goals, pioneer without certainty, and let go of comfort and ritual. This work is hard, and setbacks are inevitable. At VEON, we do not let failure deter us from our path. Progress does not always come in straight lines, and impact does not happen overnight. Resilience is what keeps us moving forward, learning, adapting, and continuing the climb, even when the way forward feels difficult.",
+    behaviourStatement: "We never give up by staying resilient, learning from setbacks, and continuing to move forward toward a better life for all.",
     takeaways: [
       "In times of severe disruption, perseverance defines leadership.",
       "Maintain emotional composure and rally teams to overcome seemingly impossible roadblocks."

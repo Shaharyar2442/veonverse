@@ -90,7 +90,7 @@ export default function CompletionOverlay({ totalScore, correctCount, totalStage
     const speechText = isPerfect
       ? "Outstanding. You've mastered all ten VEON leadership principles with perfect clarity and conviction. You are a true VEONVERSE Leadership Master. Your score: " + totalScore + " points. Congratulations on this remarkable achievement."
       : "Well done. You completed all ten VEON leadership principles. Your score is " + totalScore + " points. " + correctCount + " out of " + totalStages + " perfect decisions. Every step makes you a stronger leader. Congratulations.";
-    anamAvatar.speak(speechText, 0.9);
+    anamAvatar.speak(speechText);
   }, []);
 
   return (
@@ -143,11 +143,9 @@ export default function CompletionOverlay({ totalScore, correctCount, totalStage
         <div className={`relative w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-[#8a6400] via-[#ffca05] to-[#fff1a6] shadow-xl ${
           isPerfect ? "ring-4 ring-[#ffca05]/40 shadow-amber-400/30" : ""
         }`}>
-          <img
-            src="/kaan_avatar.jpg"
-            alt="Kaan Terzioglu"
-            className="w-full h-full rounded-full object-cover object-top border-2 border-[#0b1827]"
-          />
+          <div className="w-full h-full rounded-full bg-[#07121f] border-2 border-[#0b1827] flex items-center justify-center">
+            <Award size={54} className="text-[#ffca05]" />
+          </div>
         </div>
       </motion.div>
 

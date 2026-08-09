@@ -158,36 +158,13 @@ export default function LandingPage({ onEnter }) {
           </h1>
         </div>
 
-        {/* Kaan's Portrait on a podium */}
+        {/* Gold divider in place of the former portrait */}
         <motion.div
-          className="relative"
-          animate={{ y: [0, -4, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        >
-          {/* Podium glow */}
-          <div className="absolute -inset-6 rounded-full bg-[#ffca05]/5 blur-xl" />
-
-          {/* Portrait frame */}
-          <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-full p-[3px] bg-gradient-to-tr from-[#8a6400] via-[#ffca05] to-[#fff1a6] shadow-[0_0_40px_rgba(255,202,5,0.2)]">
-            <img
-              src="/kaan_avatar.jpg"
-              alt="Kaan Terzioglu"
-              className="w-full h-full rounded-full object-cover object-top border-2 border-[#020811]"
-            />
-          </div>
-
-          {/* Podium base */}
-          <div className="mx-auto mt-3 w-24 md:w-28 h-2 md:h-3 bg-gradient-to-r from-[#8a6400]/80 via-[#ffca05]/50 to-[#8a6400]/80 rounded-full" />
-          <div className="mx-auto mt-1 w-32 md:w-36 h-1 md:h-1.5 bg-gradient-to-r from-[#8a6400]/50 via-[#ffca05]/30 to-[#8a6400]/50 rounded-full" />
-        </motion.div>
-
-        {/* Kaan's name and title */}
-        <div className="space-y-1">
-          <p className="text-sm md:text-base font-extrabold text-slate-100">Kaan Terzioğlu</p>
-          <p className="text-[10px] md:text-xs font-bold text-[#ffca05] uppercase tracking-wider">
-            Your Executive Leadership Mentor
-          </p>
-        </div>
+          className="w-24 h-px bg-gradient-to-r from-transparent via-[#ffca05]/50 to-transparent"
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: showContent ? 1 : 0, scaleX: showContent ? 1 : 0 }}
+          transition={{ delay: 1.4, duration: 0.6 }}
+        />
 
         {/* Tagline */}
         <motion.p

@@ -1,35 +1,44 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Award, CheckCircle2, Star, X, Zap } from "lucide-react";
+import { Award, Star, X, Zap } from "lucide-react";
 import { C_FACTOR_SCENARIOS } from "../data/cFactorScenarios";
 
 const TOTAL = C_FACTOR_SCENARIOS.length;
-const RADIUS = 150;
-const CENTER_X = 50;
-const CENTER_Y = 50;
 
-function getCirclePosition(index) {
-  const angle = (360 / TOTAL) * index - 90;
-  const rad = (angle * Math.PI) / 180;
+// Journey-path geometry. Nodes alternate between two rows and are joined by a
+// dotted curve, so every principle keeps its full title on its own column.
+const STEP = 138;      // horizontal spacing per principle
+const NODE = 54;       // badge diameter
+const ROW_HIGH = 68;   // centre-y of the raised nodes
+const ROW_LOW = 124;   // centre-y of the lowered nodes
+const AREA_HEIGHT = 224;
+const TRACK_WIDTH = TOTAL * STEP;
+
+function nodeCentre(index) {
   return {
-    left: `${CENTER_X + Math.cos(rad) * (RADIUS / 3)}%`,
-    top: `${CENTER_Y + Math.sin(rad) * (RADIUS / 2.6)}%`,
+    x: index * STEP + STEP / 2,
+    y: index % 2 === 0 ? ROW_HIGH : ROW_LOW,
   };
 }
 
-function shortTitle(title) {
-  return title
-    .replace("We ", "")
-    .replace("Our ", "")
-    .substring(0, 22);
+// Smooth S-curve through every node centre, drawn dotted behind the badges.
+function buildTrackPath() {
+  const points = C_FACTOR_SCENARIOS.map((_, i) => nodeCentre(i));
+  const curves = points.slice(1).map((point, i) => {
+    const prev = points[i];
+    const handle = STEP / 2;
+    return `C ${prev.x + handle} ${prev.y}, ${point.x - handle} ${point.y}, ${point.x} ${point.y}`;
+  });
+  return `M ${points[0].x} ${points[0].y} ${curves.join(" ")}`;
 }
+
+const TRACK_PATH = buildTrackPath();
 
 export default function BadgeDrawer({ isOpen, badges, totalScore = 0, onClose }) {
   const allPrinciples = C_FACTOR_SCENARIOS.map((s, idx) => {
     const earned = badges.get(idx);
     return {
       id: s.stageId,
-      title: shortTitle(s.principleTitle),
-      fullTitle: s.principleTitle,
+      title: s.principleTitle,
       earned: !!earned,
       stars: earned ? earned.stars : 0,
       badge: earned ? earned.badge : null,
@@ -53,7 +62,7 @@ export default function BadgeDrawer({ isOpen, badges, totalScore = 0, onClose })
           />
 
           <motion.div
-            className="fixed inset-x-0 bottom-0 z-[101] bg-[#030b16]/98 backdrop-blur-xl border-t border-[#1c3148] rounded-t-3xl shadow-[0_-20px_60px_rgba(0,0,0,0.5)] max-h-[80vh] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#29435f] [&::-webkit-scrollbar-thumb]:rounded-full"
+            className="fixed inset-x-0 bottom-0 z-[101] bg-[#030b16]/98 backdrop-blur-xl border-t border-[#1c3148] rounded-t-3xl shadow-[0_-20px_60px_rgba(0,0,0,0.5)] max-h-[85vh] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#29435f] [&::-webkit-scrollbar-thumb]:rounded-full"
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -75,86 +84,117 @@ export default function BadgeDrawer({ isOpen, badges, totalScore = 0, onClose })
                   </p>
                 </div>
               </div>
-              <button
-                className="w-9 h-9 rounded-full bg-[#0b1827] border border-[#29435f] hover:border-[#ffca05] hover:bg-[#ffca05]/10 text-slate-300 flex items-center justify-center transition-all cursor-pointer"
-                onClick={onClose}
-              >
-                <X size={16} />
-              </button>
+
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#07121f] border border-[#1c3148]">
+                  <Zap size={14} className="text-[#ffca05]" />
+                  <span className="text-sm font-black text-white tabular-nums leading-none">{totalScore}</span>
+                </div>
+                <button
+                  className="w-9 h-9 rounded-full bg-[#0b1827] border border-[#29435f] hover:border-[#ffca05] hover:bg-[#ffca05]/10 text-slate-300 flex items-center justify-center transition-all cursor-pointer"
+                  onClick={onClose}
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
 
-            {/* Badge Circle + Key */}
-            <div className="relative w-full max-w-[440px] mx-auto my-4 px-8" style={{ height: "min(65vw, 380px)" }}>
-              {/* Key — left side */}
-              <div className="absolute -left-18 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#ffca05]/20 border border-[#ffca05] shrink-0" />
-                  <span className="text-[8px] text-slate-500 font-semibold hidden md:inline">Mastered</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-slate-300/10 border border-slate-400 shrink-0" />
-                  <span className="text-[8px] text-slate-500 font-semibold hidden md:inline">Completed</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#0b1827] border border-[#1c3148] shrink-0" />
-                  <span className="text-[8px] text-slate-500 font-semibold hidden md:inline">Locked</span>
-                </div>
-              </div>
+            {/* Journey path — scrolls sideways only if the viewport is narrower than the track */}
+            <div className="overflow-x-auto overflow-y-hidden px-6 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#29435f] [&::-webkit-scrollbar-thumb]:rounded-full">
+              <div className="relative mx-auto" style={{ width: TRACK_WIDTH, height: AREA_HEIGHT }}>
+                <svg
+                  className="absolute inset-0 pointer-events-none"
+                  width={TRACK_WIDTH}
+                  height={AREA_HEIGHT}
+                  aria-hidden="true"
+                >
+                  <path
+                    d={TRACK_PATH}
+                    fill="none"
+                    stroke="#ffca05"
+                    strokeOpacity="0.4"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeDasharray="1 10"
+                  />
+                </svg>
 
-              {/* Circle */}
-              <div className="relative w-full h-full">
                 {allPrinciples.map((principle, idx) => {
-                  const pos = getCirclePosition(idx);
+                  const { x, y } = nodeCentre(idx);
                   const isGold = principle.stars === 3;
                   const isSilver = principle.earned && principle.stars < 3;
-                  const isUnearned = !principle.earned;
 
                   return (
                     <motion.div
                       key={principle.id}
-                      className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5"
-                      style={{ left: pos.left, top: pos.top }}
-                      initial={{ opacity: 0, scale: 0 }}
+                      className="absolute flex flex-col items-center"
+                      style={{ left: x - STEP / 2, top: y - NODE / 2, width: STEP }}
+                      initial={{ opacity: 0, scale: 0.4 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: idx * 0.06, type: "spring", stiffness: 200 }}
-                      title={principle.fullTitle}
+                      transition={{ delay: idx * 0.05, type: "spring", stiffness: 220, damping: 18 }}
+                      title={
+                        principle.earned
+                          ? `${principle.title} — ${principle.badge} (${principle.score} pts)`
+                          : `${principle.title} — locked`
+                      }
                     >
-                      <motion.div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${isGold
-                          ? "bg-[#ffca05]/20 border-2 border-[#ffca05] shadow-[0_0_15px_rgba(255,202,5,0.25)]"
-                          : isSilver
-                            ? "bg-slate-300/10 border-2 border-slate-400 shadow-[0_0_10px_rgba(148,163,184,0.12)]"
-                            : "bg-[#0b1827]/80 border-2 border-[#1c3148]"
+                      <div className="relative">
+                        {/* Step number */}
+                        <span
+                          className={`absolute -top-2.5 left-1/2 -translate-x-1/2 z-10 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black tabular-nums shadow-sm ${
+                            principle.earned
+                              ? "bg-[#ffca05] text-[#03101f]"
+                              : "bg-[#17273a] text-slate-400 border border-[#29435f]"
                           }`}
-                        whileHover={{ scale: 1.12 }}
+                        >
+                          {principle.id}
+                        </span>
+
+                        <motion.div
+                          className={`rounded-2xl flex items-center justify-center border-2 transition-colors ${
+                            isGold
+                              ? "bg-[#ffca05]/15 border-[#ffca05] shadow-[0_0_20px_rgba(255,202,5,0.28)]"
+                              : isSilver
+                              ? "bg-slate-300/10 border-slate-400 shadow-[0_0_14px_rgba(148,163,184,0.15)]"
+                              : "bg-[#0b1827] border-[#1c3148]"
+                          }`}
+                          style={{ width: NODE, height: NODE }}
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          <Star
+                            size={24}
+                            className={isGold ? "text-[#ffca05]" : isSilver ? "text-slate-300" : "text-[#29435f]"}
+                            fill={isGold ? "#ffca05" : isSilver ? "currentColor" : "none"}
+                          />
+                        </motion.div>
+                      </div>
+
+                      <span
+                        className={`mt-2.5 px-1 text-[10px] font-bold uppercase tracking-tight text-center leading-[1.3] ${
+                          isGold ? "text-[#ffca05]" : isSilver ? "text-slate-300" : "text-slate-600"
+                        }`}
                       >
-                        {isGold ? (
-                          <Star size={15} className="text-[#ffca05]" fill="#ffca05" />
-                        ) : isSilver ? (
-                          <Star size={15} className="text-slate-400" fill="currentColor" />
-                        ) : (
-                          <span className="text-[10px] font-extrabold text-slate-600">{principle.id}</span>
-                        )}
-                      </motion.div>
-
-                      {isGold && <CheckCircle2 size={10} className="text-[#ffca05]" />}
-                      {isSilver && <CheckCircle2 size={10} className="text-slate-400" />}
-
-                      <span className={`text-[7px] font-bold uppercase tracking-tight text-center leading-tight max-w-[48px] ${isGold ? "text-[#ffca05]" : isSilver ? "text-slate-400" : "text-slate-700"
-                        }`}>
                         {principle.title}
                       </span>
                     </motion.div>
                   );
                 })}
+              </div>
+            </div>
 
-                {/* Center hub */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <div className="w-14 h-14 rounded-full bg-[#07121f] border-2 border-[#1c3148] flex flex-col items-center justify-center shadow-lg">
-                    <Zap size={16} className="text-[#ffca05]" />
-                    <span className="text-base font-black text-white leading-none tabular-nums">{totalScore}</span>
-                  </div>
-                </div>
+            {/* Key */}
+            <div className="flex items-center justify-center gap-5 pt-2 pb-6">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#ffca05]/20 border border-[#ffca05]" />
+                <span className="text-[10px] text-slate-500 font-medium">Mastered</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-slate-300/10 border border-slate-400" />
+                <span className="text-[10px] text-slate-500 font-medium">Completed</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#0b1827] border border-[#1c3148]" />
+                <span className="text-[10px] text-slate-500 font-medium">Locked</span>
               </div>
             </div>
           </motion.div>

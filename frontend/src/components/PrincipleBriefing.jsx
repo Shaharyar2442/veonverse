@@ -36,7 +36,7 @@ export default function PrincipleBriefing({ scenario, onBegin }) {
   useEffect(() => {
     if (phase === "title" && !spoken.current) {
       spoken.current = true;
-      anamAvatar.speak(scenario.teachingBrief, 0.85);
+      anamAvatar.speak(scenario.teachingBrief);
     }
   }, [phase]);
 
@@ -224,6 +224,19 @@ export default function PrincipleBriefing({ scenario, onBegin }) {
                   {scenario.teachingBrief}
                 </p>
               </motion.div>
+
+              {scenario.behaviourStatement && (
+                <motion.div
+                  className="border-l-2 border-[#ffca05] bg-[#ffca05]/[0.06] rounded-r-lg px-4 py-3"
+                  initial={{ opacity: 0, x: -15 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.22 }}
+                >
+                  <p className="text-sm font-semibold leading-relaxed text-[#ffca05]">
+                    {scenario.behaviourStatement}
+                  </p>
+                </motion.div>
+              )}
 
               <motion.div
                 className="flex justify-center"

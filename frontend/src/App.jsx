@@ -185,16 +185,12 @@ export default function App() {
         ) : (
           <>
             <VectorStage
-              locationTag={currentScenario.locationTag}
-              isSpeaking={isSpeaking}
-              stageIndex={currentStageIndex}
               currentScenario={currentScenario}
               isMuted={isMuted}
               onToggleMute={toggleMute}
               onReplayAudio={handleReplayAudio}
               selectedChoice={selectedChoice}
               dialogueStep={dialogueStep}
-              avatarState={avatarState}
               hideVisualizer={phase === "briefing"}
             />
 

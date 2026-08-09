@@ -1,6 +1,6 @@
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Award, CheckCircle2, Lightbulb, Shield, Star } from "lucide-react";
+import { ArrowRight, Award, CheckCircle2, Lightbulb, Star } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 export default function ResultPanel({ choice, scenario, onNextStage, isFinalStage }) {
@@ -67,37 +67,16 @@ export default function ResultPanel({ choice, scenario, onNextStage, isFinalStag
             </div>
           </motion.div>
 
-          {/* Feedback + Badge in compact row */}
+          {/* Badge — the feedback text is already shown above by ScenarioCard */}
           <motion.div
-            className="space-y-1.5"
+            className="flex justify-center"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <p className="text-sm leading-snug text-slate-300 text-center max-w-2xl mx-auto px-2">
-              {choice.feedback}
-            </p>
-            <div className="flex justify-center">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-[#ffca05]/30 bg-[#ffca05]/10 text-[#ffca05]">
-                <Award size={14} />
-                <span className="text-[10px] font-extrabold uppercase tracking-wider">{choice.badge}</span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Psychometric Tension */}
-          <motion.div
-            className="flex justify-center"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="bg-[#07121f]/80 border border-[#1c3148] rounded-lg px-4 py-2.5">
-              <div className="flex items-center gap-1 mb-1">
-                <Shield size={11} className="text-[#ffca05]" />
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Psychometric Tension</span>
-              </div>
-              <p className="text-[11px] font-semibold text-slate-200 leading-tight text-center">{scenario.psychometricTension}</p>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-[#ffca05]/30 bg-[#ffca05]/10 text-[#ffca05]">
+              <Award size={14} />
+              <span className="text-[10px] font-extrabold uppercase tracking-wider">{choice.badge}</span>
             </div>
           </motion.div>
 
