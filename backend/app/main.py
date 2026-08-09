@@ -24,6 +24,7 @@ from app.seed import seed_initial_data
 from app.services.bedrock import BedrockService
 from app.services.gamification import compute_level, xp_to_next_level
 from app.services.lesson import STEP_TO_NUMBER, advance_lesson
+from app.services.news import get_stories
 from app.services.retrieval import retrieve_context
 
 
@@ -233,6 +234,12 @@ def get_badges(user_id: int, db: Session = Depends(get_db)):
     ]
 
     return {"user_id": user_id, "badges": badge_items}
+
+
+@app.get("/stories")
+def stories(limit: int = 8, refresh: bool = False):
+    """Latest real news per operating company, for the hub page."""
+    return get_stories(limit=limit, force=refresh)
 
 
 @app.get("/")
