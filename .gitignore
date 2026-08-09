@@ -8,8 +8,12 @@ frontend/.env
 *.db
 *.sqlite3
 veonverse.db
+.pgdata/
+.pglogs/
 
 # Python
+.venv/
+venv/
 __pycache__/
 *.pyc
 *.pyo

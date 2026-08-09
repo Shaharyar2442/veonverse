@@ -1,9 +1,20 @@
+from pathlib import Path
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+# Repo root is two levels up from this file (backend/app/config.py -> repo root).
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # Look for .env in the repo root first, then backend/, then CWD, so the app
+    # behaves the same no matter which directory it is launched from.
+    model_config = SettingsConfigDict(
+        env_file=(REPO_ROOT / ".env", REPO_ROOT / "backend" / ".env", ".env"),
+        extra="ignore",
+    )
 
     app_name: str = "VEONVERSE AI Leadership Mentor"
     groq_api_key: str = Field(default="", alias="GROQ_API_KEY")
