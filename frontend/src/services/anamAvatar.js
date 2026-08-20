@@ -52,17 +52,21 @@ class AnamAvatarService {
     if (this.voice) return this.voice;
 
     const voices = await this._loadVoices();
-    // Same predicate the scenario dialogue already resolved to — kept verbatim so
-    // the narrator stays the voice used for the questions.
+    
+    // Filter to only English voices first to avoid matching "Natural" or "Male"
+    // voices from other languages (e.g. Windows "Microsoft Katja Online (Natural) - German")
+    const englishVoices = voices.filter(v => v.lang && v.lang.startsWith("en"));
+
     this.voice =
-      voices.find(
+      englishVoices.find(
         (v) =>
           v.name.includes("Natural") ||
           v.name.includes("Male") ||
           v.name.includes("David") ||
           v.name.includes("Google US English")
       ) ||
-      voices.find((v) => v.lang && v.lang.startsWith("en")) ||
+      englishVoices[0] ||
+      voices[0] ||
       null;
 
     return this.voice;

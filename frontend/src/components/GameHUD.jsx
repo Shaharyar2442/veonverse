@@ -24,16 +24,11 @@ export default function GameHUD({
   return (
     <header className="h-16 bg-[#030b16]/95 backdrop-blur-md border-b border-[#1c3148] shadow-[0_8px_24px_rgba(0,0,0,0.28)] flex items-center justify-between px-6 z-50 relative">
       {/* Brand & Principle Stage Title */}
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 bg-[#ffca05] text-[#03101f] rounded-lg flex items-center justify-center font-black text-xl shadow-md shadow-amber-500/20">
-          V
-        </div>
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1.5">
-            <span className="text-base font-extrabold tracking-tight text-slate-100">
-              VEON<span className="text-[#ffca05]">VERSE</span>
-            </span>
-          </div>
+      <div className="flex items-center">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-lg font-black tracking-tight text-slate-100">
+            VEON<span className="text-[#ffca05]">VERSE</span>
+          </span>
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-400 font-medium">
               Principle {currentStage} of {totalStages}: <span className="font-semibold text-slate-200">{stageName}</span>
