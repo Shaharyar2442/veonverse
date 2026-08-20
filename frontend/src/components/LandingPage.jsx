@@ -1,15 +1,27 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Award, Star } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
 import { useEffect, useState } from "react";
+import { PRINCIPLE_TILES } from "../data/principleTiles";
 
 export default function LandingPage({ onEnter }) {
   const [showContent, setShowContent] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [revealedCount, setRevealedCount] = useState(0);
 
   useEffect(() => {
     const t = setTimeout(() => setShowContent(true), 600);
     return () => clearTimeout(t);
   }, []);
+
+  // Spotlight reveal: light the principle tiles one-by-one as the beam sweeps.
+  useEffect(() => {
+    if (!showContent) return;
+    const timers = [];
+    for (let i = 0; i < PRINCIPLE_TILES.length; i++) {
+      timers.push(setTimeout(() => setRevealedCount(i + 1), 1800 + i * 140));
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [showContent]);
 
   function handleEnter() {
     setIsTransitioning(true);
@@ -48,7 +60,7 @@ export default function LandingPage({ onEnter }) {
         <motion.div
           className="absolute left-0 top-0 bottom-0 w-1/2 z-10 pointer-events-none"
           initial={{ x: 0 }}
-          animate={{ x: showContent ? "-55%" : 0 }}
+          animate={{ x: showContent ? "-100%" : 0 }}
           transition={{ duration: 1.2, ease: [0.6, 0, 0.4, 1], delay: 0.2 }}
         >
           <div className="w-full h-full flex">
@@ -66,7 +78,6 @@ export default function LandingPage({ onEnter }) {
               />
             ))}
           </div>
-          {/* Gold trim along curtain edge */}
           <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#8a6400] via-[#ffca05] to-[#8a6400]" />
         </motion.div>
       </AnimatePresence>
@@ -76,7 +87,7 @@ export default function LandingPage({ onEnter }) {
         <motion.div
           className="absolute right-0 top-0 bottom-0 w-1/2 z-10 pointer-events-none"
           initial={{ x: 0 }}
-          animate={{ x: showContent ? "55%" : 0 }}
+          animate={{ x: showContent ? "100%" : 0 }}
           transition={{ duration: 1.2, ease: [0.6, 0, 0.4, 1], delay: 0.2 }}
         >
           <div className="w-full h-full flex">
@@ -100,22 +111,19 @@ export default function LandingPage({ onEnter }) {
 
       {/* Left Column */}
       <motion.div
-        className="absolute left-[12%] md:left-[18%] top-[10%] bottom-[10%] w-12 md:w-16 flex flex-col items-center pointer-events-none"
+        className="absolute left-[1%] md:left-[5%] top-[10%] bottom-[10%] w-12 md:w-16 flex flex-col items-center pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: showContent ? 1 : 0 }}
         transition={{ delay: 0.8, duration: 1 }}
       >
-        {/* Column capital */}
         <div className="w-full h-10 md:h-14 border-2 border-[#ffca05]/30 border-b-0 rounded-t-lg bg-gradient-to-b from-[#ffca05]/10 to-transparent" />
-        {/* Column shaft */}
         <div className="flex-1 w-full border-x-2 border-[#ffca05]/20 bg-gradient-to-r from-[#0a1726] via-[#07121f] to-[#0a1726]" />
-        {/* Column base */}
         <div className="w-full h-10 md:h-14 border-2 border-[#ffca05]/30 border-t-0 rounded-b-lg bg-gradient-to-t from-[#ffca05]/10 to-transparent" />
       </motion.div>
 
       {/* Right Column */}
       <motion.div
-        className="absolute right-[12%] md:right-[18%] top-[10%] bottom-[10%] w-12 md:w-16 flex flex-col items-center pointer-events-none"
+        className="absolute right-[1%] md:right-[5%] top-[10%] bottom-[10%] w-12 md:w-16 flex flex-col items-center pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: showContent ? 1 : 0 }}
         transition={{ delay: 0.8, duration: 1 }}
@@ -135,7 +143,7 @@ export default function LandingPage({ onEnter }) {
 
       {/* Bottom architectural base line */}
       <motion.div
-        className="absolute bottom-[10%] md:bottom-[8%] left-1/2 -translate-x-1/2 w-[70%] max-w-2xl h-px bg-gradient-to-r from-transparent via-[#ffca05]/30 to-transparent pointer-events-none"
+        className="absolute bottom-[8%] md:bottom-[6%] left-1/2 -translate-x-1/2 w-[70%] max-w-2xl h-px bg-gradient-to-r from-transparent via-[#ffca05]/30 to-transparent pointer-events-none"
         initial={{ opacity: 0, scaleX: 0 }}
         animate={{ opacity: showContent ? 1 : 0, scaleX: showContent ? 1 : 0 }}
         transition={{ delay: 1.0, duration: 1 }}
@@ -143,7 +151,7 @@ export default function LandingPage({ onEnter }) {
 
       {/* Center Stage Content */}
       <motion.div
-        className="relative z-20 flex flex-col items-center gap-6 md:gap-8 px-6 text-center"
+        className="relative z-20 flex flex-col items-center gap-4 md:gap-5 px-6 text-center"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: showContent ? 1 : 0, y: showContent ? 0 : 30 }}
         transition={{ delay: 1.2, duration: 0.8 }}
@@ -158,7 +166,7 @@ export default function LandingPage({ onEnter }) {
           </h1>
         </div>
 
-        {/* Gold divider in place of the former portrait */}
+        {/* Gold divider */}
         <motion.div
           className="w-24 h-px bg-gradient-to-r from-transparent via-[#ffca05]/50 to-transparent"
           initial={{ opacity: 0, scaleX: 0 }}
@@ -176,35 +184,69 @@ export default function LandingPage({ onEnter }) {
           10 Leadership Principles. One Voice. Your journey to becoming a VEON leader begins now.
         </motion.p>
 
-        {/* Accolade row */}
+        {/* Principles frieze — sequential spotlight reveal */}
         <motion.div
-          className="flex items-center gap-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: showContent ? 1 : 0 }}
-          transition={{ delay: 1.8 }}
+          className="relative flex items-start justify-center gap-2 md:gap-3 flex-wrap max-w-5xl mt-1"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: showContent ? 1 : 0, y: showContent ? 0 : 15 }}
+          transition={{ delay: 1.8, duration: 0.5 }}
         >
-          <div className="flex items-center gap-1.5">
-            <Award size={14} className="text-[#ffca05]/60" />
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">10 Principles</span>
-          </div>
-          <div className="w-px h-4 bg-[#1c3148]" />
-          <div className="flex items-center gap-1.5">
-            <Star size={14} className="text-[#ffca05]/60" />
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Scenario-Based</span>
-          </div>
-          <div className="w-px h-4 bg-[#1c3148]" />
-          <div className="flex items-center gap-1.5">
-            <Award size={14} className="text-[#ffca05]/60" />
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Earn Badges</span>
-          </div>
+          {/* Sweeping spotlight beam */}
+          <motion.div
+            className="absolute top-0 bottom-0 w-20 md:w-28 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(255,202,5,0.18) 45%, rgba(255,202,5,0.28) 50%, rgba(255,202,5,0.18) 55%, transparent 100%)",
+            }}
+            initial={{ left: "-5%" }}
+            animate={{ left: "105%" }}
+            transition={{ duration: 1.4, delay: 1.8, ease: "easeInOut" }}
+          />
+
+          {PRINCIPLE_TILES.map((tile, idx) => {
+            const Icon = tile.icon;
+            const lit = idx < revealedCount;
+            return (
+              <motion.div
+                key={tile.title}
+                className="flex flex-col items-center gap-1 group cursor-pointer"
+                style={{ width: 78 }}
+                title={tile.title}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={lit ? { opacity: 1, scale: 1 } : { opacity: 0.18, scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 260, damping: 18 }}
+              >
+                <span
+                  className="w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 group-hover:scale-110 group-hover:border-[#ffca05]"
+                  style={
+                    lit
+                      ? {
+                        background: `${tile.color}1f`,
+                        borderColor: `${tile.color}`,
+                        boxShadow: `0 0 14px ${tile.color}40`,
+                      }
+                      : { background: "#0b1827", borderColor: "#1c3148" }
+                  }
+                >
+                  <Icon size={18} style={{ color: lit ? tile.color : "#3a4a5e" }} />
+                </span>
+                <span
+                  className={`text-[7px] font-bold uppercase tracking-wide leading-tight text-center whitespace-pre-line transition-colors duration-300 group-hover:text-white ${lit ? "text-slate-300" : "text-slate-600"
+                    }`}
+                >
+                  {tile.label}
+                </span>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         {/* CTA */}
         <motion.button
-          className="mt-4 bg-[#ffca05] hover:bg-[#ffd84d] text-[#03101f] font-extrabold px-10 py-3.5 rounded-full text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(255,202,5,0.25)] hover:shadow-[0_0_50px_rgba(255,202,5,0.4)] transition-all cursor-pointer flex items-center gap-3 group"
+          className="mt-2 bg-[#ffca05] hover:bg-[#ffd84d] text-[#03101f] font-extrabold px-10 py-3.5 rounded-full text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(255,202,5,0.25)] hover:shadow-[0_0_50px_rgba(255,202,5,0.4)] transition-all cursor-pointer flex items-center gap-3 group"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: showContent ? 1 : 0, y: showContent ? 0 : 20 }}
-          transition={{ delay: 2.0, duration: 0.6 }}
+          transition={{ delay: 3.3, duration: 0.6 }}
           onClick={handleEnter}
         >
           <span>Take Your Seat</span>

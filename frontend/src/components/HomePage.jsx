@@ -8,26 +8,17 @@ import {
   ChevronDown,
   ChevronRight,
   Compass,
-  Flag,
-  Flame,
-  Footprints,
   Globe,
   Home,
   LayoutGrid,
   Lock,
   MapPin,
-  Medal,
   MessageCircle,
   MessageSquare,
   Play,
-  Rocket,
   Search,
-  Shield,
-  Sun,
-  TrendingUp,
   User,
   Users,
-  UsersRound,
 } from "lucide-react";
 import {
   BanglalinkLogo,
@@ -37,6 +28,7 @@ import {
   MobilinkLogo,
   VeonLogo,
 } from "./BrandLogos";
+import { PRINCIPLE_TILES } from "../data/principleTiles";
 
 /* ------------------------------------------------------------------ data -- */
 
@@ -76,20 +68,6 @@ const OPCOS = [
   { id: "banglalink", name: "Banglalink", place: "Bangladesh", lat: 23.81, lon: 90.41, Logo: BanglalinkLogo, tint: "#f26522" },
   { id: "beeline-kz", name: "Beeline", place: "Kazakhstan", lat: 43.24, lon: 76.89, Logo: BeelineLogo, tint: "#ffdd00" },
   { id: "beeline-uz", name: "Beeline", place: "Uzbekistan", lat: 41.31, lon: 69.24, Logo: BeelineLogo, tint: "#ffdd00" },
-];
-
-// Ordered to match the reference layout.
-const PRINCIPLE_TILES = [
-  { label: "Clarity is Our\nSuperpower", icon: Sun, color: "#fbbf24" },
-  { label: "Our Pioneering\nSpirit Defines Us", icon: Rocket, color: "#60a5fa" },
-  { label: "We Fight\nAgainst Mediocrity", icon: Shield, color: "#a78bfa" },
-  { label: "We Put Results\nAbove Rituals", icon: TrendingUp, color: "#34d399" },
-  { label: "Courage Fuels\nOur Leadership", icon: Flame, color: "#fb923c" },
-  { label: "We Hire for\nPotential and Drive", icon: Users, color: "#4ade80" },
-  { label: "We Aim for\nAudacious Impact", icon: Flag, color: "#60a5fa" },
-  { label: "We Incentivize\nwith integrity", icon: Medal, color: "#fbbf24" },
-  { label: "We Stand Strong\nTogether", icon: UsersRound, color: "#c084fc" },
-  { label: "We Never\nGive Up", icon: Footprints, color: "#2dd4bf" },
 ];
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
