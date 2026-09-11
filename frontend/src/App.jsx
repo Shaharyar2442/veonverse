@@ -7,6 +7,7 @@ import CompletionOverlay from "./components/CompletionOverlay";
 import LandingPage from "./components/LandingPage";
 import PrincipleBriefing from "./components/PrincipleBriefing";
 import HomePage from "./components/HomePage";
+import PrinciplesScreen from "./components/PrinciplesScreen";
 import { C_FACTOR_SCENARIOS } from "./data/cFactorScenarios";
 import { anamAvatar } from "./services/anamAvatar";
 
@@ -23,8 +24,9 @@ export default function App() {
   const [isBadgeDrawerOpen, setIsBadgeDrawerOpen] = useState(false);
   const [phase, setPhase] = useState("briefing");
   const [hasStarted, setHasStarted] = useState(false);
+  // "principles" = the Our Principles flip-card screen (the main screen),
   // "experience" = the 10-principle journey, "home" = the VEONVERSE hub page.
-  const [view, setView] = useState("experience");
+  const [view, setView] = useState("principles");
 
   const currentScenario = C_FACTOR_SCENARIOS[currentStageIndex] || C_FACTOR_SCENARIOS[0];
 
@@ -151,6 +153,15 @@ export default function App() {
     setView("experience");
   }
 
+  // Picking a card on the Our Principles screen opens that principle directly,
+  // skipping the landing page — the card the user clicked is the intent.
+  function handleSelectPrincipleFromMainScreen(index) {
+    anamAvatar.stop();
+    handleSelectStage(index);
+    setHasStarted(true);
+    setView("experience");
+  }
+
   function handleReplayAudio() {
     const textToSpeak = selectedChoice
       ? selectedChoice.feedback
@@ -171,7 +182,11 @@ export default function App() {
     }
   }
 
-  // The hub page scrolls, so it renders outside .cfactor-game-root (100vh, clipped).
+  // Both of these scroll, so they render outside .cfactor-game-root (100vh, clipped).
+  if (view === "principles") {
+    return <PrinciplesScreen onSelectPrinciple={handleSelectPrincipleFromMainScreen} />;
+  }
+
   if (view === "home") {
     return <HomePage onNavigate={handleHomeNavigate} />;
   }
@@ -193,7 +208,6 @@ export default function App() {
         totalScore={totalScore}
         badgeCount={earnedBadges.size}
         onOpenBadges={() => setIsBadgeDrawerOpen(true)}
-        onReturnHome={handleReturnHome}
       />
 
       <main className="game-stage-viewport">
