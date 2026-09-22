@@ -1,0 +1,11 @@
+# Build output
+bin/
+obj/
+
+# The embedding model, ~90 MB. Too large for git; fetch it instead.
+# See backend-dotnet/README.md section 3 for the two curl commands.
+VeonVerse.Api/Models_Onnx/model.onnx
+VeonVerse.Api/Models_Onnx/vocab.txt
+
+# Local user-specific launch overrides
+*.user
